@@ -1,0 +1,19 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.5" y="0.5" width="31" height="31" rx="9.5" fill="url(#paint0_linear_79_241)" stroke="black"/>
+<mask id="mask0_79_241" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="32" height="32">
+<rect width="32" height="32" rx="10" fill="url(#paint1_linear_79_241)"/>
+</mask>
+<g mask="url(#mask0_79_241)">
+<path d="M33 6.00052C33 6.00052 26.9374 10.9155 22.2183 14.7434C21.4617 13.4758 21.0637 12.8242 21.0249 12.7897H18.7633C18.9183 13.0747 20.2507 15.3422 20.6476 16.0173C19.7599 16.7373 18.9655 17.3821 18.3293 17.8988C17.9042 17.186 17.3067 16.1856 16.5314 14.8893C15.7174 13.5244 15.2903 12.8242 15.2499 12.7882H12.2603C12.1101 12.9158 -1.02067 25.9963 -0.999976 26C-0.999976 26 9.68189 17.3397 13.7243 14.0578C14.2958 15.0347 14.9846 16.205 14.9846 16.205C14.9846 16.205 16.6758 19.0963 16.7076 19.2103H16.7771C16.7771 19.2103 16.7798 19.2118 16.7819 19.2118H19.7397C19.7731 19.1831 20.4566 18.5064 21.4967 17.4731C21.9567 18.2664 22.4651 19.1501 22.4826 19.2118H24.8758V19.1998C24.8169 19.0942 24.1823 18.0284 22.9729 16.0052C26.9034 12.0953 33.0138 6.00261 33 6V6.00052Z" fill="black"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_79_241" x1="16" y1="0" x2="16" y2="32" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#D8D8D8"/>
+</linearGradient>
+<linearGradient id="paint1_linear_79_241" x1="16" y1="0" x2="16" y2="32" gradientUnits="userSpaceOnUse">
+<stop stop-color="white"/>
+<stop offset="1" stop-color="#DFDFDF"/>
+</linearGradient>
+</defs>
+</svg>
