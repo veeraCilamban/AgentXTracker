@@ -26,7 +26,6 @@ import { DeleteDashboardButton } from "@/src/components/deleteButton";
 import { EditDashboardDialog } from "@/src/features/dashboard/components/EditDashboardDialog";
 import { User as UserIcon } from "lucide-react";
 import { useRouter } from "next/router";
-import { getDisplayName } from "@/src/utils/nameChange";
 
 type DashboardTableRow = {
   id: string;
@@ -175,11 +174,10 @@ export function DashboardTable() {
       size: 200,
       cell: (row) => {
         const name = row.getValue();
-        const displayName = getDisplayName(name);
         return name ? (
           <TableLink
             path={`/project/${projectId}/dashboards/${encodeURIComponent(row.row.original.id)}`}
-            value={displayName}
+            value={name}
           />
         ) : undefined;
       },
@@ -202,7 +200,7 @@ export function DashboardTable() {
             <span role="img" aria-label="Langfuse">
               🪢
             </span>
-            AutoX
+            Langfuse
           </span>
         ) : (
           <span className="flex gap-1 px-2 py-0.5 text-xs">

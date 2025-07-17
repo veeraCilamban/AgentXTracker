@@ -20,10 +20,17 @@ import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { LangfuseLogo } from "@/src/components/LangfuseLogo";
 import { SidebarNotifications } from "@/src/components/nav/sidebar-notifications";
 import { UsageTracker } from "@/src/ee/features/billing/components/UsageTracker";
+import { type RouteGroup } from "@/src/components/layouts/routes";
 
 type AppSidebarProps = {
-  navItems: NavMainItem[];
-  secondaryNavItems: NavMainItem[];
+  navItems: {
+    grouped: Partial<Record<RouteGroup, NavMainItem[]>> | null;
+    ungrouped: NavMainItem[];
+  };
+  secondaryNavItems: {
+    grouped: Partial<Record<RouteGroup, NavMainItem[]>> | null;
+    ungrouped: NavMainItem[];
+  };
   userNavProps: UserNavigationProps;
 } & React.ComponentProps<typeof Sidebar>;
 
@@ -45,10 +52,10 @@ export function AppSidebar({
       <SidebarContent>
         <NavMain items={navItems} />
         <div className="flex-1" />
-        {/* <div className="flex flex-col gap-2 p-2">
+        <div className="flex flex-col gap-2 p-2">
           <UsageTracker />
           <SidebarNotifications />
-        </div> */}
+        </div>
         <NavMain items={secondaryNavItems} />
       </SidebarContent>
       <SidebarFooter>
