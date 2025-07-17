@@ -92,29 +92,29 @@ export const getOrganizationSettingsPages = ({
     ),
     show: showOrgApiKeySettings,
   },
-  {
-    title: "Members",
-    slug: "members",
-    cmdKKeywords: ["invite", "user", "rbac"],
-    content: (
-      <div className="flex flex-col gap-6">
-        <div>
-          <Header title="Organization Members" />
-          <MembersTable orgId={organization.id} />
-        </div>
-        <div>
-          <MembershipInvitesPage orgId={organization.id} />
-        </div>
-      </div>
-    ),
+  // {
+  //   title: "Members",
+  //   slug: "members",
+  //   cmdKKeywords: ["invite", "user", "rbac"],
+  //   content: (
+  //     <div className="flex flex-col gap-6">
+  //       <div>
+  //         <Header title="Organization Members" />
+  //         <MembersTable orgId={organization.id} />
+  //       </div>
+  //       <div>
+  //         <MembershipInvitesPage orgId={organization.id} />
+  //       </div>
+  //     </div>
+  //   ),
   },
-  {
-    title: "Billing",
-    slug: "billing",
-    cmdKKeywords: ["payment", "subscription", "plan", "invoice"],
-    content: <BillingSettings />,
-    show: showBillingSettings,
-  },
+  // {
+  //   title: "Billing",
+  //   slug: "billing",
+  //   cmdKKeywords: ["payment", "subscription", "plan", "invoice"],
+  //   content: <BillingSettings />,
+  //   show: showBillingSettings,
+  // },
   {
     title: "SSO",
     slug: "sso",

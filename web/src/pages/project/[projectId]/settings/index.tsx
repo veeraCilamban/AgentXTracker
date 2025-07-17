@@ -168,27 +168,27 @@ export const getProjectSettingsPages = ({
     cmdKKeywords: ["config"],
     content: <ScoreConfigSettings projectId={project.id} />,
   },
-  {
-    title: "Members",
-    slug: "members",
-    cmdKKeywords: ["invite", "user"],
-    content: (
-      <div>
-        <Header title="Project Members" />
-        <MembersTable
-          orgId={organization.id}
-          project={{ id: project.id, name: project.name }}
-          showSettingsCard
-        />
-        <div>
-          <MembershipInvitesPage
-            orgId={organization.id}
-            projectId={project.id}
-          />
-        </div>
-      </div>
-    ),
-  },
+  // {
+  //   title: "Members",
+  //   slug: "members",
+  //   cmdKKeywords: ["invite", "user"],
+  //   content: (
+  //     <div>
+  //       <Header title="Project Members" />
+  //       <MembersTable
+  //         orgId={organization.id}
+  //         project={{ id: project.id, name: project.name }}
+  //         showSettingsCard
+  //       />
+  //       <div>
+  //         <MembershipInvitesPage
+  //           orgId={organization.id}
+  //           projectId={project.id}
+  //         />
+  //       </div>
+  //     </div>
+  //   ),
+  // },
   {
     title: "Integrations",
     slug: "integrations",
@@ -207,12 +207,12 @@ export const getProjectSettingsPages = ({
     cmdKKeywords: ["trail"],
     content: <AuditLogsSettingsPage projectId={project.id} />,
   },
-  {
-    title: "Billing",
-    slug: "billing",
-    href: `/organization/${organization.id}/settings/billing`,
-    show: showBillingSettings,
-  },
+  // {
+  //   title: "Billing",
+  //   slug: "billing",
+  //   href: `/organization/${organization.id}/settings/billing`,
+  //   show: showBillingSettings,
+  // },
   {
     title: "Organization Settings",
     slug: "organization",

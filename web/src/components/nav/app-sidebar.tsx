@@ -44,18 +44,18 @@ export function AppSidebar({
     <Sidebar collapsible="icon" variant="sidebar" {...props}>
       <SidebarHeader>
         <div className="flex min-h-10 items-center gap-2 px-3 py-2">
-          <LangfuseLogo version />
+          <img src="/assets/AutoXLogo.svg" alt="AutoXLogo" className="w-[8rem] h-full"/>
         </div>
         <div className="h-1 flex-1 border-b" />
-        <DemoBadge />
+        {/* <DemoBadge /> */}
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navItems} />
         <div className="flex-1" />
-        <div className="flex flex-col gap-2 p-2">
+        {/* <div className="flex flex-col gap-2 p-2">
           <UsageTracker />
           <SidebarNotifications />
-        </div>
+        </div> */}
         <NavMain items={secondaryNavItems} />
       </SidebarContent>
       <SidebarFooter>

@@ -280,24 +280,24 @@ export default function Layout(props: PropsWithChildren) {
     <>
       <Head>
         <title>
-          {activePathName ? `${activePathName} | Langfuse` : "Langfuse"}
+          {activePathName ? `${activePathName} | AutoX` : "AutoX"}
         </title>
         <link
           rel="apple-touch-icon"
           sizes="180x180"
-          href={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/apple-touch-icon.png`}
+          href={`/assets/AutoXDark.svg`}
         />
         <link
           rel="icon"
-          type="image/png"
+          type="image/svg+xml"
           sizes="32x32"
-          href={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/favicon-32x32${env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ? "-dev" : ""}.png`}
+          href={`/assets/AutoXDark.svg`}
         />
         <link
           rel="icon"
-          type="image/png"
+          type="image/svg+xml"
           sizes="16x16"
-          href={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/favicon-16x16${env.NEXT_PUBLIC_LANGFUSE_CLOUD_REGION === "DEV" ? "-dev" : ""}.png`}
+          href={`/assets/AutoXDark.svg`}
         />
       </Head>
       <div>

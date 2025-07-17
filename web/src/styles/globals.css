@@ -39,8 +39,8 @@
 
     --ring: 215 20.2% 65.1%;
 
-    --primary-accent: 243 75.4% 58.6%;
-    --hover-primary-accent: 239 83.5% 66.7%;
+    --primary-accent: 0 0% 0%; /* Changed from blue to black (#000000) */
+    --hover-primary-accent: 0 0% 0% / 0.87; /* Changed to black with 87% opacity (#000000dd) */
 
     --muted-green: 84 81% 44%;
     --muted-magenta: 330 90% 70%;
@@ -117,8 +117,8 @@
 
     --ring: 217.2 32.6% 17.5%;
 
-    --primary-accent: 246 55% 70%;
-    --muted-primary-accent: 239 83.5% 66.7%;
+    --primary-accent: 0 0% 100%; /* Changed to white */
+    --muted-primary-accent: 0 0% 100% / 0.87; /* Changed to white with 87% opacity */
 
     --muted-blue: 215 95% 73.1%;
     --muted-green: 142 76.7% 73.1%;

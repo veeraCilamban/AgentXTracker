@@ -26,6 +26,7 @@ import { DeleteDashboardButton } from "@/src/components/deleteButton";
 import { EditDashboardDialog } from "@/src/features/dashboard/components/EditDashboardDialog";
 import { User as UserIcon } from "lucide-react";
 import { useRouter } from "next/router";
+import { getNameChange } from "@/src/utils/getNameChanged";
 
 type DashboardTableRow = {
   id: string;
@@ -174,10 +175,11 @@ export function DashboardTable() {
       size: 200,
       cell: (row) => {
         const name = row.getValue();
+        const displayName= getNameChange(name)
         return name ? (
           <TableLink
             path={`/project/${projectId}/dashboards/${encodeURIComponent(row.row.original.id)}`}
-            value={name}
+            value={displayName}
           />
         ) : undefined;
       },
@@ -197,10 +199,7 @@ export function DashboardTable() {
       cell: (row) => {
         return row.row.original.owner === "LANGFUSE" ? (
           <span className="flex gap-1 px-2 py-0.5 text-xs">
-            <span role="img" aria-label="Langfuse">
-              🪢
-            </span>
-            Langfuse
+            <UserIcon className="h-3 w-3" /> Project
           </span>
         ) : (
           <span className="flex gap-1 px-2 py-0.5 text-xs">

@@ -85,7 +85,7 @@ const PageHeader = ({
                       data-testid="page-header-title"
                     >
                       {title}
-                      {help && (
+                      {/* {help && (
                         <span className="whitespace-nowrap">
                           &nbsp;
                           <DocPopup
@@ -94,7 +94,7 @@ const PageHeader = ({
                             className={help.className}
                           />
                         </span>
-                      )}
+                      )} */}
                     </span>
                   </h2>
                 </div>
