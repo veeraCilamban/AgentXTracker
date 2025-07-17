@@ -14,10 +14,10 @@ export const LangfuseIcon = ({
 }) => (
   // eslint-disable-next-line @next/next/no-img-element
   <img
-    src={"/assets/AutoXLight.svg"}
+    src={`/assets/AutoXDark.svg`}
     width={size}
     height={size}
-    alt="AutoX Logo"
+    alt="Langfuse Icon"
     className={className}
   />
 );
@@ -32,7 +32,7 @@ const LangfuseLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={"/assets/AutoXLight.svg"}
-          alt="AutoX Logo"
+          alt="Langfuse Logo"
           className={cn(
             "group-data-[collapsible=icon]:hidden dark:hidden",
             size === "sm" ? "max-h-4 max-w-14" : "max-h-5 max-w-16",
@@ -41,7 +41,7 @@ const LangfuseLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={"/assets/AutoXDark.svg"}
-          alt="AutoX Logo"
+          alt="Langfuse Logo"
           className={cn(
             "hidden group-data-[collapsible=icon]:hidden dark:block",
             size === "sm" ? "max-h-4 max-w-14" : "max-h-5 max-w-16",

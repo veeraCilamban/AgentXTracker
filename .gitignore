@@ -69,3 +69,6 @@ node_modules
 .turbo
 
 web/test-results/*
+
+# local config files
+*.local.*
