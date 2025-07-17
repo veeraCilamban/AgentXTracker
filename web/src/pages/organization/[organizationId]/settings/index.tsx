@@ -107,7 +107,7 @@ export const getOrganizationSettingsPages = ({
   //       </div>
   //     </div>
   //   ),
-  },
+  // },
   // {
   //   title: "Billing",
   //   slug: "billing",
