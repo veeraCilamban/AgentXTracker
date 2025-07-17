@@ -14,7 +14,7 @@ export const LangfuseIcon = ({
 }) => (
   // eslint-disable-next-line @next/next/no-img-element
   <img
-    src={`${env.NEXT_PUBLIC_BASE_PATH ?? ""}/icon.svg`}
+    src={`/assets/AutoXDark.svg`}
     width={size}
     height={size}
     alt="Langfuse Icon"
@@ -31,7 +31,7 @@ const LangfuseLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
       <div className="flex items-center gap-1">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={uiCustomization.logoLightModeHref}
+          src={"/assets/AutoXLight.svg"}
           alt="Langfuse Logo"
           className={cn(
             "group-data-[collapsible=icon]:hidden dark:hidden",
@@ -40,7 +40,7 @@ const LangfuseLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
         />
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={uiCustomization.logoDarkModeHref}
+          src={"/assets/AutoXDark.svg"}
           alt="Langfuse Logo"
           className={cn(
             "hidden group-data-[collapsible=icon]:hidden dark:block",
@@ -65,7 +65,7 @@ const LangfuseLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
           size === "sm" ? "text-sm" : "text-xl",
         )}
       >
-        Langfuse
+        AutoX
       </span>
     </div>
   );

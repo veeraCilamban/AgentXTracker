@@ -111,31 +111,31 @@ export const ROUTES: Route[] = [
     section: RouteSection.Main,
     pathname: `/project/[projectId]/sessions`,
   },
-  {
-    title: "Users",
-    pathname: `/project/[projectId]/users`,
-    icon: UsersIcon,
-    productModule: "tracing",
-    group: RouteGroup.Observability,
-    section: RouteSection.Main,
-  },
-  {
-    title: "Prompts",
-    pathname: "/project/[projectId]/prompts",
-    icon: FileJson,
-    projectRbacScopes: ["prompts:read"],
-    productModule: "prompt-management",
-    group: RouteGroup.PromptManagement,
-    section: RouteSection.Main,
-  },
-  {
-    title: "Playground",
-    pathname: "/project/[projectId]/playground",
-    icon: TerminalIcon,
-    productModule: "playground",
-    group: RouteGroup.PromptManagement,
-    section: RouteSection.Main,
-  },
+  // {
+  //   title: "Users",
+  //   pathname: `/project/[projectId]/users`,
+  //   icon: UsersIcon,
+  //   productModule: "tracing",
+  //   group: RouteGroup.Observability,
+  //   section: RouteSection.Main,
+  // },
+  // {
+  //   title: "Prompts",
+  //   pathname: "/project/[projectId]/prompts",
+  //   icon: FileJson,
+  //   projectRbacScopes: ["prompts:read"],
+  //   productModule: "prompt-management",
+  //   group: RouteGroup.PromptManagement,
+  //   section: RouteSection.Main,
+  // },
+  // {
+  //   title: "Playground",
+  //   pathname: "/project/[projectId]/playground",
+  //   icon: TerminalIcon,
+  //   productModule: "playground",
+  //   group: RouteGroup.PromptManagement,
+  //   section: RouteSection.Main,
+  // },
   {
     title: "Scores",
     pathname: `/project/[projectId]/scores`,
@@ -204,13 +204,13 @@ export const ROUTES: Route[] = [
     icon: Settings,
     section: RouteSection.Secondary,
   },
-  {
-    title: "Support",
-    icon: LifeBuoy,
-    section: RouteSection.Secondary,
-    pathname: "", // Empty pathname since this is a dropdown
-    menuNode: <SupportMenuDropdown />,
-  },
+  // {
+  //   title: "Support",
+  //   icon: LifeBuoy,
+  //   section: RouteSection.Secondary,
+  //   pathname: "", // Empty pathname since this is a dropdown
+  //   menuNode: <SupportMenuDropdown />,
+  // },
 ];
 
 function CommandMenuTrigger() {

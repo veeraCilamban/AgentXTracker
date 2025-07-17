@@ -52,10 +52,10 @@ export function AppSidebar({
       <SidebarContent>
         <NavMain items={navItems} />
         <div className="flex-1" />
-        <div className="flex flex-col gap-2 p-2">
+        {/* <div className="flex flex-col gap-2 p-2">
           <UsageTracker />
           <SidebarNotifications />
-        </div>
+        </div> */}
         <NavMain items={secondaryNavItems} />
       </SidebarContent>
       <SidebarFooter>
