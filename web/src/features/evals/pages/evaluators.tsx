@@ -20,9 +20,10 @@ export default function EvaluatorsPage() {
   const projectId = router.query.projectId as string;
   const capture = usePostHogClientCapture();
 
-  const evaluatorLimit = useEntitlementLimit(
-    "model-based-evaluations-count-evaluators",
-  );
+  // const evaluatorLimit = useEntitlementLimit(
+  //   "model-based-evaluations-count-evaluators",
+  // );
+  
   const hasWriteAccess = useHasProjectAccess({
     projectId,
     scope: "evalJob:CUD",
@@ -100,7 +101,7 @@ export default function EvaluatorsPage() {
                   router.push(`/project/${projectId}/evals/new`);
                 }}
                 limitValue={countsQuery.data?.configActiveCount ?? 0}
-                limit={evaluatorLimit}
+                limit={false}
               >
                 Set up evaluator
               </ActionButton>
