@@ -16,10 +16,54 @@ import { SetupDefaultEvalModelCard } from "@/src/features/evals/components/set-u
 import { useTemplateValidation } from "@/src/features/evals/hooks/useTemplateValidation";
 import { Card } from "@/src/components/ui/card";
 import { Skeleton } from "@/src/components/ui/skeleton";
+import { type EvalTemplate } from "@langfuse/shared";
 
 type SelectEvaluatorListProps = {
   projectId: string;
 };
+
+const newEvalTemplates: EvalTemplate[] = [
+  {
+    id: "autox-agent-performance",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    projectId: null,
+    name: "Agent Performance",
+    version: 1,
+    prompt:
+      "Evaluate the performance of an AI agent on a continuous scale from 0 to 1. Consider factors like task completion speed, accuracy, and adherence to instructions. Score 1 for optimal performance and 0 for failure.\n\nExample:\nTask: {{task}}\nAgent Output: {{agent_output}}\nExpected Behavior: {{expected_behavior}}\n\nScore: {{score}}\nReasoning: {{reasoning}}",
+    partner: null,
+    model: null,
+    provider: null,
+    modelParams: null,
+    vars: ["task", "agent_output", "expected_behavior"],
+    outputSchema: {
+      score:
+        "Score between 0 and 1. Score 0 if performance is poor, 1 if excellent",
+      reasoning: "Detailed evaluation of the agent's performance",
+    },
+  },
+  {
+    id: "autox-agent-quality",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    projectId: null,
+    name: "Agent Quality",
+    version: 1,
+    prompt:
+      "Assess the overall quality of an AI agent's response on a scale from 0 to 1. Consider clarity, coherence, relevance, and usefulness. Score 1 for high-quality responses and 0 for low-quality ones.\n\nExample:\nQuery: {{query}}\nAgent Response: {{agent_response}}\n\nScore: {{score}}\nReasoning: {{reasoning}}",
+    partner: null,
+    model: null,
+    provider: null,
+    modelParams: null,
+    vars: ["query", "agent_response"],
+    outputSchema: {
+      score:
+        "Score between 0 and 1. Score 0 if quality is poor, 1 if excellent",
+      reasoning: "Detailed assessment of response quality",
+    },
+  },
+];
 
 export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
   const router = useRouter();
@@ -38,6 +82,13 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
     },
   );
 
+  const allTemplates = [
+    ...(templates.data?.templates || []),
+    ...newEvalTemplates,
+  ];
+
+  console.log("templetes", templates);
+
   const utils = api.useUtils();
 
   const handleOpenCreateEvaluator = () => {
@@ -53,7 +104,7 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
   };
 
   const handleTemplateSelect = (templateId: string) => {
-    const template = templates.data?.templates.find((t) => t.id === templateId);
+    const template = allTemplates.find((t) => t.id === templateId);
     if (template) {
       setSelectedTemplate(template);
     }
@@ -77,11 +128,12 @@ export function SelectEvaluatorList({ projectId }: SelectEvaluatorListProps) {
             <div className="flex-1 overflow-hidden">
               <EvaluatorSelector
                 projectId={projectId}
-                evalTemplates={templates.data?.templates || []}
+                evalTemplates={allTemplates}
                 selectedTemplateId={selectedTemplate?.id || undefined}
-                onTemplateSelect={(templateId) =>
-                  handleTemplateSelect(templateId)
-                }
+                onTemplateSelect={(templateId) => {
+                  console.log(templateId, "Temlplate Id.1");
+                  handleTemplateSelect(templateId);
+                }}
               />
             </div>
           )}

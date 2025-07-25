@@ -1,6 +1,7 @@
 import { type EvalTemplate } from "@langfuse/shared";
 import { InnerEvaluatorForm } from "@/src/features/evals/components/inner-evaluator-form";
 import { type PartialConfig } from "@/src/features/evals/types";
+import { AutoXEvalForm } from "./custom-innter-eval-form";
 
 export const EvaluatorForm = (props: {
   projectId: string;
@@ -22,6 +23,17 @@ export const EvaluatorForm = (props: {
 
   if (!currentTemplate) {
     return null;
+  }
+
+  const shouldUseAutoXForm = [
+    "autox-agent-performance",
+    "autox-agent-quality",
+  ].includes(currentTemplate.id);
+
+  if (shouldUseAutoXForm) {
+    return (
+      <AutoXEvalForm projectId={props.projectId} id={currentTemplate.id} />
+    );
   }
 
   return (

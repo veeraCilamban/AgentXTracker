@@ -176,12 +176,15 @@ export function EvaluatorSelector({
             <InputCommandGroup heading="Langfuse managed evaluators">
               {filteredTemplates.langfuse.map(([name, templateData]) => {
                 const latestVersion = templateData[templateData.length - 1];
-                const isInvalid = isTemplateInvalid(latestVersion);
-
+                const isInvalid =
+                  name === "Agent Performance" || name === "Agent Quality"
+                    ? false
+                    : isTemplateInvalid(latestVersion);
+                console.log("Invalid", name, isInvalid);
                 return (
                   <InputCommandItem
                     key={`langfuse-${name}`}
-                    disabled={isInvalid}
+                    disabled={false}
                     onSelect={() => {
                       onTemplateSelect(
                         latestVersion.id,

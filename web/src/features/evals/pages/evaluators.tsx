@@ -23,7 +23,7 @@ export default function EvaluatorsPage() {
   // const evaluatorLimit = useEntitlementLimit(
   //   "model-based-evaluations-count-evaluators",
   // );
-  
+
   const hasWriteAccess = useHasProjectAccess({
     projectId,
     scope: "evalJob:CUD",

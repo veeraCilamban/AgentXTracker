@@ -14,6 +14,50 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { getMaintainer } from "@/src/features/evals/utils/typeHelpers";
 import { MaintainerTooltip } from "@/src/features/evals/components/maintainer-tooltip";
 import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
+import { EvalTemplate } from "@langfuse/shared";
+
+const newEvalTemplates: EvalTemplate[] = [
+  {
+    id: "autox-agent-performance",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    projectId: null,
+    name: "Agent Performance",
+    version: 1,
+    prompt:
+      "Evaluate the performance of an AI agent on a continuous scale from 0 to 1. Consider factors like task completion speed, accuracy, and adherence to instructions. Score 1 for optimal performance and 0 for failure.\n\nExample:\nTask: {{task}}\nAgent Output: {{agent_output}}\nExpected Behavior: {{expected_behavior}}\n\nScore: {{score}}\nReasoning: {{reasoning}}",
+    partner: null,
+    model: null,
+    provider: null,
+    modelParams: null,
+    vars: ["task", "agent_output", "expected_behavior"],
+    outputSchema: {
+      score:
+        "Score between 0 and 1. Score 0 if performance is poor, 1 if excellent",
+      reasoning: "Detailed evaluation of the agent's performance",
+    },
+  },
+  {
+    id: "autox-agent-quality",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    projectId: null,
+    name: "Agent Quality",
+    version: 1,
+    prompt:
+      "Assess the overall quality of an AI agent's response on a scale from 0 to 1. Consider clarity, coherence, relevance, and usefulness. Score 1 for high-quality responses and 0 for low-quality ones.\n\nExample:\nQuery: {{query}}\nAgent Response: {{agent_response}}\n\nScore: {{score}}\nReasoning: {{reasoning}}",
+    partner: null,
+    model: null,
+    provider: null,
+    modelParams: null,
+    vars: ["query", "agent_response"],
+    outputSchema: {
+      score:
+        "Score between 0 and 1. Score 0 if quality is poor, 1 if excellent",
+      reasoning: "Detailed assessment of response quality",
+    },
+  },
+];
 
 // Multi-step setup process
 // 1. Select Evaluator: /project/:projectId/evals/new
@@ -41,9 +85,14 @@ export default function NewEvaluatorPage() {
     },
   );
 
-  const currentTemplate = evalTemplates.data?.templates.find(
-    (t) => t.id === evaluatorId,
-  );
+  const templates: EvalTemplate[] = [
+    ...(evalTemplates.data?.templates?.filter(
+      (t): t is EvalTemplate => t !== undefined,
+    ) || []),
+    ...newEvalTemplates,
+  ];
+
+  const currentTemplate = templates.find((t) => t.id === evaluatorId);
 
   if (!hasAccess) {
     return <div>You do not have access to this page.</div>;
@@ -118,7 +167,7 @@ export default function NewEvaluatorPage() {
           <RunEvaluatorForm
             projectId={projectId}
             evaluatorId={evaluatorId}
-            evalTemplates={evalTemplates.data?.templates ?? []}
+            evalTemplates={templates}
           />
         )
       }
