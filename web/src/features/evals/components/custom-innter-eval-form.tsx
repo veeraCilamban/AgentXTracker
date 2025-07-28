@@ -128,53 +128,55 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
 
   const basicTraces: any[] = tracesQuery.data?.traces || [];
 
-  // Create queries for all trace details
-  const traceDetailQueries = basicTraces.map((trace) =>
-    api.traces.byIdWithObservationsAndScores.useQuery(
-      {
-        traceId: trace.id,
-        timestamp: new Date(),
-        projectId: projectId,
-      },
-      {
-        enabled: !!trace.id,
-        retry(failureCount, error) {
-          if (
-            error.data?.code === "UNAUTHORIZED" ||
-            error.data?.code === "NOT_FOUND"
-          )
-            return false;
-          return failureCount < 3;
-        },
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: Infinity,
-      },
-    ),
-  );
+  console.log(basicTraces);
 
-  // Combine all trace details into a single object
-  const allTraceDetails = basicTraces.reduce(
-    (acc, trace, index) => {
-      const query = traceDetailQueries[index];
-      if (query?.data) {
-        acc[trace.id] = query.data;
-      }
-      return acc;
-    },
-    {} as Record<string, DetailedTrace>,
-  );
+  // // Create queries for all trace details
+  // const traceDetailQueries = basicTraces.map((trace) =>
+  //   api.traces.byIdWithObservationsAndScores.useQuery(
+  //     {
+  //       traceId: trace.id,
+  //       timestamp: new Date(),
+  //       projectId: projectId,
+  //     },
+  //     {
+  //       enabled: !!trace.id,
+  //       retry(failureCount, error) {
+  //         if (
+  //           error.data?.code === "UNAUTHORIZED" ||
+  //           error.data?.code === "NOT_FOUND"
+  //         )
+  //           return false;
+  //         return failureCount < 3;
+  //       },
+  //       refetchOnMount: false,
+  //       refetchOnWindowFocus: false,
+  //       refetchOnReconnect: false,
+  //       staleTime: Infinity,
+  //     },
+  //   ),
+  // );
 
-  // Track loading states for each trace
-  const traceLoadingStates = basicTraces.reduce(
-    (acc, trace, index) => {
-      const query = traceDetailQueries[index];
-      acc[trace.id] = query?.isLoading || false;
-      return acc;
-    },
-    {} as Record<string, boolean>,
-  );
+  // // Combine all trace details into a single object
+  // const allTraceDetails = basicTraces.reduce(
+  //   (acc, trace, index) => {
+  //     const query = traceDetailQueries[index];
+  //     if (query?.data) {
+  //       acc[trace.id] = query.data;
+  //     }
+  //     return acc;
+  //   },
+  //   {} as Record<string, DetailedTrace>,
+  // );
+
+  // // Track loading states for each trace
+  // const traceLoadingStates = basicTraces.reduce(
+  //   (acc, trace, index) => {
+  //     const query = traceDetailQueries[index];
+  //     acc[trace.id] = query?.isLoading || false;
+  //     return acc;
+  //   },
+  //   {} as Record<string, boolean>,
+  // );
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -233,7 +235,7 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
       return;
     }
 
-    const selectedTrace = allTraceDetails[selectedTraceId];
+    const selectedTrace = selectedTraceId;
     if (!selectedTrace) {
       setError("Selected trace details not loaded yet, please wait");
       return;
@@ -323,56 +325,56 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
     }
   };
 
-  const formatMetadata = (metadata: string | any) => {
-    if (typeof metadata === "string") {
-      try {
-        const parsed = JSON.parse(metadata);
-        return Object.entries(parsed)
-          .slice(0, 3)
-          .map(
-            ([key, value]) =>
-              `${key}: ${String(value).substring(0, 20)}${String(value).length > 20 ? "..." : ""}`,
-          )
-          .join(", ");
-      } catch (e) {
-        return metadata.substring(0, 50) + (metadata.length > 50 ? "..." : "");
-      }
-    }
+  // const formatMetadata = (metadata: string | any) => {
+  //   if (typeof metadata === "string") {
+  //     try {
+  //       const parsed = JSON.parse(metadata);
+  //       return Object.entries(parsed)
+  //         .slice(0, 3)
+  //         .map(
+  //           ([key, value]) =>
+  //             `${key}: ${String(value).substring(0, 20)}${String(value).length > 20 ? "..." : ""}`,
+  //         )
+  //         .join(", ");
+  //     } catch (e) {
+  //       return metadata.substring(0, 50) + (metadata.length > 50 ? "..." : "");
+  //     }
+  //   }
 
-    if (metadata && typeof metadata === "object") {
-      return Object.entries(metadata)
-        .slice(0, 3)
-        .map(
-          ([key, value]) =>
-            `${key}: ${String(value).substring(0, 20)}${String(value).length > 20 ? "..." : ""}`,
-        )
-        .join(", ");
-    }
-    return "-";
-  };
+  //   if (metadata && typeof metadata === "object") {
+  //     return Object.entries(metadata)
+  //       .slice(0, 3)
+  //       .map(
+  //         ([key, value]) =>
+  //           `${key}: ${String(value).substring(0, 20)}${String(value).length > 20 ? "..." : ""}`,
+  //       )
+  //       .join(", ");
+  //   }
+  //   return "-";
+  // };
 
-  const getTraceDisplayData = (trace: BasicTrace) => {
-    const details = allTraceDetails[trace.id];
-    const isLoading = traceLoadingStates[trace.id];
+  // const getTraceDisplayData = (trace: BasicTrace) => {
+  //   const details = allTraceDetails[trace.id];
+  //   const isLoading = traceLoadingStates[trace.id];
 
-    return {
-      input: isLoading
-        ? "Loading..."
-        : details?.input
-          ? `${details.input.substring(0, 50)}...`
-          : "-",
-      output: isLoading
-        ? "Loading..."
-        : details?.output
-          ? `${details.output.substring(0, 50)}...`
-          : "-",
-      metadata: isLoading
-        ? "Loading..."
-        : details?.metadata
-          ? formatMetadata(details.metadata)
-          : "-",
-    };
-  };
+  //   return {
+  //     input: isLoading
+  //       ? "Loading..."
+  //       : details?.input
+  //         ? `${details.input.substring(0, 50)}...`
+  //         : "-",
+  //     output: isLoading
+  //       ? "Loading..."
+  //       : details?.output
+  //         ? `${details.output.substring(0, 50)}...`
+  //         : "-",
+  //     metadata: isLoading
+  //       ? "Loading..."
+  //       : details?.metadata
+  //         ? formatMetadata(details.metadata)
+  //         : "-",
+  //   };
+  // };
 
   return (
     <div className="">
@@ -446,7 +448,7 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
                 </TableRow>
               ) : (
                 basicTraces.map((trace) => {
-                  const displayData = getTraceDisplayData(trace);
+                  // const displayData = getTraceDisplayData(trace);
                   return (
                     <TableRow key={trace.id}>
                       <TableCell>
@@ -458,12 +460,12 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
                       <TableCell>
                         {new Date(trace.timestamp).toLocaleString()}
                       </TableCell>
-                      <TableCell>{displayData.input}</TableCell>
-                      <TableCell>{displayData.output}</TableCell>
+                      <TableCell>{"displayData.input"}</TableCell>
+                      <TableCell>{"displayData.output"}</TableCell>
                       <TableCell>
                         {trace.tags?.length > 0 ? trace.tags.join(", ") : "-"}
                       </TableCell>
-                      <TableCell>{displayData.metadata}</TableCell>
+                      <TableCell>{"displayData.metadata"}</TableCell>
                     </TableRow>
                   );
                 })
