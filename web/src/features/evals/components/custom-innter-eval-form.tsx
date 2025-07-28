@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { api } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
@@ -31,42 +31,13 @@ interface AutoXEvalFormProps {
 type UploadedJson = (Record<string, unknown> & { fileName?: string }) | null;
 type EvaluationResult = Record<string, unknown> | string | null;
 
-type BasicTrace = {
+type Trace = {
   id: string;
-  projectId: string;
   timestamp: string;
-  tags: string[];
-  bookmarked: boolean;
-  name: string;
-  release: string | null;
-  version: string | null;
-  userId: string;
-  environment: string;
-  sessionId: string;
-  public: boolean;
-};
-
-type DetailedTrace = {
-  id: string;
-  projectId: string;
-  name: string;
-  timestamp: string;
-  environment: string;
-  tags: string[];
-  bookmarked: boolean;
-  release: string | null;
-  version: string | null;
-  userId: string;
-  sessionId: string;
-  public: boolean;
   input: string;
   output: string;
-  metadata: string;
-  createdAt: string;
-  updatedAt: string;
-  scores: any[];
-  latency: number;
-  observations: any[];
+  // Keep all other fields but we won't explicitly type them
+  [key: string]: any;
 };
 
 type DropdownItem = {
@@ -80,7 +51,8 @@ type ValidationResponse = {
 };
 
 export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
-  const [selectedTraceId, setSelectedTraceId] = useState<string>("");
+  const [traces, setTraces] = useState<any[]>([]);
+  const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [prompt, setPrompt] = useState("");
   const [uploadedJson, setUploadedJson] = useState<UploadedJson>(null);
@@ -104,7 +76,7 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
 
   const currentDropdown = id ? dropdownOptions[id] : null;
 
-  // Get basic traces list
+  // Get basic traces list and then fetch details for each
   const tracesQuery = api.traces.all.useQuery(
     {
       projectId,
@@ -122,61 +94,55 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
-      staleTime: Infinity,
     },
   );
 
-  const basicTraces: any[] = tracesQuery.data?.traces || [];
+  useEffect(() => {
+    if (tracesQuery.data?.traces) {
+      // Fetch details for each trace
+      const fetchTraceDetails = async () => {
+        const detailedTraces = await Promise.all(
+          tracesQuery.data.traces.map((trace) => {
+            try {
+              const response =
+                api.traces.byIdWithObservationsAndScores.useQuery(
+                  {
+                    traceId: trace.id,
+                    timestamp: new Date(),
+                    projectId: projectId,
+                  },
+                  {
+                    retry(failureCount, error) {
+                      if (
+                        error.data?.code === "UNAUTHORIZED" ||
+                        error.data?.code === "NOT_FOUND"
+                      )
+                        return false;
+                      return failureCount < 3;
+                    },
+                  },
+                );
 
-  console.log(basicTraces);
+              return response.data;
+            } catch (error) {
+              console.error(
+                `Failed to fetch details for trace ${trace.id}`,
+                error,
+              );
+              return {
+                ...trace,
+                input: "Failed to load",
+                output: "Failed to load",
+              };
+            }
+          }),
+        );
+        setTraces(detailedTraces);
+      };
 
-  // // Create queries for all trace details
-  // const traceDetailQueries = basicTraces.map((trace) =>
-  //   api.traces.byIdWithObservationsAndScores.useQuery(
-  //     {
-  //       traceId: trace.id,
-  //       timestamp: new Date(),
-  //       projectId: projectId,
-  //     },
-  //     {
-  //       enabled: !!trace.id,
-  //       retry(failureCount, error) {
-  //         if (
-  //           error.data?.code === "UNAUTHORIZED" ||
-  //           error.data?.code === "NOT_FOUND"
-  //         )
-  //           return false;
-  //         return failureCount < 3;
-  //       },
-  //       refetchOnMount: false,
-  //       refetchOnWindowFocus: false,
-  //       refetchOnReconnect: false,
-  //       staleTime: Infinity,
-  //     },
-  //   ),
-  // );
-
-  // // Combine all trace details into a single object
-  // const allTraceDetails = basicTraces.reduce(
-  //   (acc, trace, index) => {
-  //     const query = traceDetailQueries[index];
-  //     if (query?.data) {
-  //       acc[trace.id] = query.data;
-  //     }
-  //     return acc;
-  //   },
-  //   {} as Record<string, DetailedTrace>,
-  // );
-
-  // // Track loading states for each trace
-  // const traceLoadingStates = basicTraces.reduce(
-  //   (acc, trace, index) => {
-  //     const query = traceDetailQueries[index];
-  //     acc[trace.id] = query?.isLoading || false;
-  //     return acc;
-  //   },
-  //   {} as Record<string, boolean>,
-  // );
+      fetchTraceDetails();
+    }
+  }, [tracesQuery.data, projectId]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -201,12 +167,8 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
     reader.readAsText(file);
   };
 
-  const handleTraceSelection = (traceId: string) => {
-    if (selectedTraceId === traceId) {
-      setSelectedTraceId("");
-    } else {
-      setSelectedTraceId(traceId);
-    }
+  const handleTraceSelection = (trace: Trace) => {
+    setSelectedTrace(trace);
   };
 
   const handleItemSelect = (value: string) => {
@@ -225,19 +187,13 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
       return;
     }
 
-    if (!selectedTraceId) {
+    if (!selectedTrace) {
       setError("Please select a trace to evaluate");
       return;
     }
 
     if (selectedItems.length === 0) {
       setError("Please select at least one item to evaluate");
-      return;
-    }
-
-    const selectedTrace = selectedTraceId;
-    if (!selectedTrace) {
-      setError("Selected trace details not loaded yet, please wait");
       return;
     }
 
@@ -282,7 +238,7 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
 
       const validationResponse = (await response.json()) as ValidationResponse;
       setValidationData(validationResponse);
-      setPrompt(validationResponse.previewPrompt); // Update prompt with the processed one
+      setPrompt(validationResponse.previewPrompt);
     } catch (err) {
       console.error("Validation failed:", err);
       setError("There was an error validating the evaluation");
@@ -324,57 +280,6 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
       setIsLoading(false);
     }
   };
-
-  // const formatMetadata = (metadata: string | any) => {
-  //   if (typeof metadata === "string") {
-  //     try {
-  //       const parsed = JSON.parse(metadata);
-  //       return Object.entries(parsed)
-  //         .slice(0, 3)
-  //         .map(
-  //           ([key, value]) =>
-  //             `${key}: ${String(value).substring(0, 20)}${String(value).length > 20 ? "..." : ""}`,
-  //         )
-  //         .join(", ");
-  //     } catch (e) {
-  //       return metadata.substring(0, 50) + (metadata.length > 50 ? "..." : "");
-  //     }
-  //   }
-
-  //   if (metadata && typeof metadata === "object") {
-  //     return Object.entries(metadata)
-  //       .slice(0, 3)
-  //       .map(
-  //         ([key, value]) =>
-  //           `${key}: ${String(value).substring(0, 20)}${String(value).length > 20 ? "..." : ""}`,
-  //       )
-  //       .join(", ");
-  //   }
-  //   return "-";
-  // };
-
-  // const getTraceDisplayData = (trace: BasicTrace) => {
-  //   const details = allTraceDetails[trace.id];
-  //   const isLoading = traceLoadingStates[trace.id];
-
-  //   return {
-  //     input: isLoading
-  //       ? "Loading..."
-  //       : details?.input
-  //         ? `${details.input.substring(0, 50)}...`
-  //         : "-",
-  //     output: isLoading
-  //       ? "Loading..."
-  //       : details?.output
-  //         ? `${details.output.substring(0, 50)}...`
-  //         : "-",
-  //     metadata: isLoading
-  //       ? "Loading..."
-  //       : details?.metadata
-  //         ? formatMetadata(details.metadata)
-  //         : "-",
-  //   };
-  // };
 
   return (
     <div className="">
@@ -420,61 +325,63 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[50px]">Select</TableHead>
+                <TableHead>ID</TableHead>
                 <TableHead>Timestamp</TableHead>
                 <TableHead>Input</TableHead>
                 <TableHead>Output</TableHead>
-                <TableHead>Tags</TableHead>
-                <TableHead>Metadata</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {tracesQuery.isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">
+                  <TableCell colSpan={5} className="text-center">
                     Loading traces...
                   </TableCell>
                 </TableRow>
               ) : tracesQuery.error ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">
+                  <TableCell colSpan={5} className="text-center">
                     Error: Failed to load traces from the API
                   </TableCell>
                 </TableRow>
-              ) : basicTraces.length === 0 ? (
+              ) : traces.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">
+                  <TableCell colSpan={5} className="text-center">
                     No traces found
                   </TableCell>
                 </TableRow>
               ) : (
-                basicTraces.map((trace) => {
-                  // const displayData = getTraceDisplayData(trace);
-                  return (
-                    <TableRow key={trace.id}>
-                      <TableCell>
-                        <Checkbox
-                          checked={selectedTraceId === trace.id}
-                          onCheckedChange={() => handleTraceSelection(trace.id)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {new Date(trace.timestamp).toLocaleString()}
-                      </TableCell>
-                      <TableCell>{"displayData.input"}</TableCell>
-                      <TableCell>{"displayData.output"}</TableCell>
-                      <TableCell>
-                        {trace.tags?.length > 0 ? trace.tags.join(", ") : "-"}
-                      </TableCell>
-                      <TableCell>{"displayData.metadata"}</TableCell>
-                    </TableRow>
-                  );
-                })
+                traces.map((trace) => (
+                  <TableRow key={trace.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedTrace?.id === trace.id}
+                        onCheckedChange={() => handleTraceSelection(trace)}
+                      />
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {trace.id.substring(0, 6)}...
+                    </TableCell>
+                    <TableCell>
+                      {new Date(trace.timestamp).toLocaleString()}
+                    </TableCell>
+                    <TableCell>
+                      {trace.input?.substring(0, 50) || "-"}
+                      {trace.input?.length > 50 ? "..." : ""}
+                    </TableCell>
+                    <TableCell>
+                      {trace.output?.substring(0, 50) || "-"}
+                      {trace.output?.length > 50 ? "..." : ""}
+                    </TableCell>
+                  </TableRow>
+                ))
               )}
             </TableBody>
           </Table>
         </div>
       </div>
 
+      {/* Rest of the component remains the same */}
       {/* 3. Action Row */}
       <div className="mt-5">
         <div className="flex flex-row justify-between gap-4">
@@ -546,7 +453,7 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
           placeholder="Enter your evaluation prompt..."
           rows={4}
           className="mt-2"
-          readOnly={!!validationData} // Make prompt read-only after validation
+          readOnly={!!validationData}
         />
       </div>
 
