@@ -100,43 +100,40 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
   useEffect(() => {
     if (tracesQuery.data?.traces) {
       // Fetch details for each trace
-      const fetchTraceDetails = async () => {
-        const detailedTraces = await Promise.all(
-          tracesQuery.data.traces.map((trace) => {
-            try {
-              const response =
-                api.traces.byIdWithObservationsAndScores.useQuery(
-                  {
-                    traceId: trace.id,
-                    timestamp: new Date(),
-                    projectId: projectId,
-                  },
-                  {
-                    retry(failureCount, error) {
-                      if (
-                        error.data?.code === "UNAUTHORIZED" ||
-                        error.data?.code === "NOT_FOUND"
-                      )
-                        return false;
-                      return failureCount < 3;
-                    },
-                  },
-                );
+      const fetchTraceDetails = () => {
+        const detailedTraces = tracesQuery.data.traces.map((trace) => {
+          try {
+            const response = api.traces.byIdWithObservationsAndScores.useQuery(
+              {
+                traceId: trace.id,
+                timestamp: new Date(),
+                projectId: projectId,
+              },
+              {
+                retry(failureCount, error) {
+                  if (
+                    error.data?.code === "UNAUTHORIZED" ||
+                    error.data?.code === "NOT_FOUND"
+                  )
+                    return false;
+                  return failureCount < 3;
+                },
+              },
+            );
 
-              return response.data;
-            } catch (error) {
-              console.error(
-                `Failed to fetch details for trace ${trace.id}`,
-                error,
-              );
-              return {
-                ...trace,
-                input: "Failed to load",
-                output: "Failed to load",
-              };
-            }
-          }),
-        );
+            return response.data;
+          } catch (error) {
+            console.error(
+              `Failed to fetch details for trace ${trace.id}`,
+              error,
+            );
+            return {
+              ...trace,
+              input: "Failed to load",
+              output: "Failed to load",
+            };
+          }
+        });
         setTraces(detailedTraces);
       };
 
