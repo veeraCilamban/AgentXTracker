@@ -14,7 +14,7 @@ import { useHasProjectAccess } from "@/src/features/rbac/utils/checkProjectAcces
 import { getMaintainer } from "@/src/features/evals/utils/typeHelpers";
 import { MaintainerTooltip } from "@/src/features/evals/components/maintainer-tooltip";
 import { ManageDefaultEvalModel } from "@/src/features/evals/components/manage-default-eval-model";
-import { EvalTemplate } from "@langfuse/shared";
+import { type EvalTemplate } from "@langfuse/shared";
 
 const newEvalTemplates: EvalTemplate[] = [
   {

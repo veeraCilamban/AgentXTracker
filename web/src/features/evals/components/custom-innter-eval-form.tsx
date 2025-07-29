@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { api } from "@/src/utils/api";
 import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
-import { Checkbox } from "@/src/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -10,18 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/src/components/ui/table";
 import { Textarea } from "@/src/components/ui/textarea";
 import { Label } from "@/src/components/ui/label";
 import { Badge } from "@/src/components/ui/badge";
 import { X, Check, FileText } from "lucide-react";
+import { TracesTable } from "./custom-trace-table";
 
 interface AutoXEvalFormProps {
   projectId: string;
@@ -36,7 +28,6 @@ type Trace = {
   timestamp: string;
   input: string;
   output: string;
-  // Keep all other fields but we won't explicitly type them
   [key: string]: any;
 };
 
@@ -46,12 +37,12 @@ type DropdownItem = {
 };
 
 type ValidationResponse = {
-  sessionId: string;
-  previewPrompt: string;
+  session_id: string;
+  filled_prompt_preview: string;
+  message: string;
 };
 
 export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
-  const [traces, setTraces] = useState<any[]>([]);
   const [selectedTrace, setSelectedTrace] = useState<Trace | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [prompt, setPrompt] = useState("");
@@ -60,8 +51,7 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
   const [isValidating, setIsValidating] = useState(false);
   const [result, setResult] = useState<EvaluationResult>(null);
   const [error, setError] = useState<string | null>(null);
-  const [validationData, setValidationData] =
-    useState<ValidationResponse | null>(null);
+  const [validationData, setValidationData] = useState<ValidationResponse | null>(null);
 
   const dropdownOptions: Record<string, DropdownItem> = {
     "autox-agent-quality": {
@@ -69,14 +59,14 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
       options: ["input", "output", "current_trace", "default_trace"],
     },
     "autox-agent-performance": {
-      category: "Agent Performance",
+      category: "Agent Performance", 
       options: ["input", "output", "current_trace"],
     },
   };
 
   const currentDropdown = id ? dropdownOptions[id] : null;
 
-  // Get basic traces list and then fetch details for each
+  // Get basic traces list with IDs only
   const tracesQuery = api.traces.all.useQuery(
     {
       projectId,
@@ -97,28 +87,8 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
     },
   );
 
-  const trac = tracesQuery.data?.traces || [{ id: "hello" }];
-
-  const detailedTraces = trac.map((trace) => {
-    const response = api.traces.byIdWithObservationsAndScores.useQuery(
-      {
-        traceId: trace.id,
-        timestamp: new Date(),
-        projectId: projectId,
-      },
-      {
-        retry(failureCount, error) {
-          if (
-            error.data?.code === "UNAUTHORIZED" ||
-            error.data?.code === "NOT_FOUND"
-          )
-            return false;
-          return failureCount < 3;
-        },
-      },
-    );
-    return response?.data;
-  });
+  // Extract trace IDs
+  const traceIds = tracesQuery.data?.traces?.map(trace => trace.id) || [];
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -168,7 +138,7 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
       return;
     }
 
-    if (selectedItems.length === 0) {
+    if (selectedItems?.length === 0) {
       setError("Please select at least one item to evaluate");
       return;
     }
@@ -179,45 +149,61 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
     try {
       const formData = new FormData();
 
-      // Add uploaded JSON file if exists
-      if (uploadedJson) {
-        const uploadedFile = new Blob([JSON.stringify(uploadedJson)], {
+      // Determine the API endpoint based on evaluation type
+      const isQualityEval = id === "autox-agent-quality";
+      const endpoint = isQualityEval 
+        ? "http://10.0.0.141:8000/process_and_preview_quality"
+        : "http://10.0.0.141:8000/process_and_preview_performance";
+
+      // Add prompt template
+      formData.append("prompt_template", prompt);
+
+      // Add selected variables
+      formData.append("selected_vars", JSON.stringify(selectedItems));
+
+      if (isQualityEval) {
+        // For quality evaluation - need both current and default trace
+        if (!uploadedJson) {
+          setError("Please upload a default trace file for quality evaluation");
+          return;
+        }
+
+        // Create current trace file
+        const currentTraceFile = new Blob([JSON.stringify(selectedTrace)], {
           type: "application/json",
         });
-        formData.append(
-          "goldenTraces",
-          uploadedFile,
-          uploadedJson.fileName || "golden_traces.json",
-        );
+        formData.append("current_trace_file", currentTraceFile, "current_trace.json");
+
+        // Create default trace file from uploaded JSON
+        const defaultTraceFile = new Blob([JSON.stringify(uploadedJson)], {
+          type: "application/json",
+        });
+        formData.append("default_trace_file", defaultTraceFile, uploadedJson.fileName || "default_trace.json");
+      } else {
+        // For performance evaluation - only need trace file
+        const traceFile = new Blob([JSON.stringify(selectedTrace)], {
+          type: "application/json",
+        });
+        formData.append("trace_file", traceFile, "trace.json");
+        formData.append("selected_variables", JSON.stringify(selectedItems));
       }
 
-      // Add selected trace as JSON file
-      const traceFile = new Blob([JSON.stringify(selectedTrace)], {
-        type: "application/json",
-      });
-      formData.append("selectedTrace", traceFile, "selected_trace.json");
-
-      // Add other data
-      formData.append("prompt", prompt);
-      formData.append("selectedVariables", JSON.stringify(selectedItems));
-      formData.append("projectId", projectId);
-      formData.append("evaluationType", id || "");
-
-      const response = await fetch("/api/validate-evaluation", {
+      const response = await fetch(endpoint, {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
       const validationResponse = (await response.json()) as ValidationResponse;
       setValidationData(validationResponse);
-      setPrompt(validationResponse.previewPrompt);
+      setPrompt(validationResponse.filled_prompt_preview);
     } catch (err) {
       console.error("Validation failed:", err);
-      setError("There was an error validating the evaluation");
+      setError(`There was an error validating the evaluation: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsValidating(false);
     }
@@ -233,25 +219,32 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
     setError(null);
 
     try {
-      const response = await fetch("/api/execute-evaluation", {
+      // Determine the API endpoint based on evaluation type
+      const isQualityEval = id === "autox-agent-quality";
+      const endpoint = isQualityEval 
+        ? "http://10.0.0.141:8000/evaluate_quality"
+        : "http://10.0.0.141:8000/evaluate_performance";
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          sessionId: validationData.sessionId,
+          session_id: validationData.session_id,
         }),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
 
       const evaluationResult = (await response.json()) as EvaluationResult;
       setResult(evaluationResult);
     } catch (err) {
       console.error("Evaluation failed:", err);
-      setError("There was an error executing the evaluation");
+      setError(`There was an error executing the evaluation: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsLoading(false);
     }
@@ -259,13 +252,13 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
 
   return (
     <div className="">
-      {/* 1. Upload Golden Traces Button - Only show for performance */}
+      {/* 1. Upload Golden Traces Button */}
       {id === "autox-agent-quality" && (
         <div className="mt-5 flex flex-col items-start gap-2">
           <Button variant="outline" asChild>
             <label className="flex cursor-pointer items-center gap-2">
               <FileText className="h-4 w-4" />
-              <span className="text-primary">Upload Golden Traces</span>
+              <span className="text-primary">Upload Default Trace</span>
               <input
                 type="file"
                 accept=".json"
@@ -278,9 +271,9 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
             <div className="flex items-center gap-2 rounded-md bg-secondary px-3 py-2 text-sm">
               <Check className="h-4 w-4 text-primary" />
               <div className="flex flex-col">
-                <span className="font-medium">File uploaded</span>
+                <span className="font-medium">Default trace uploaded</span>
                 <span className="text-muted-foreground">
-                  {uploadedJson.fileName || "data.json"}
+                  {uploadedJson.fileName || "default_trace.json"}
                 </span>
               </div>
             </div>
@@ -296,77 +289,34 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
         <p className="text-sm text-muted-foreground">
           Sample over the last 24 hours that match these filters
         </p>
-        <div className="mt-1 rounded-md border">
-          <div className="h-[400px] overflow-auto">
-            {" "}
-            {/* Adjust height as needed */}
-            <Table>
-              <TableHeader className="sticky top-0 z-10 bg-background">
-                <TableRow>
-                  <TableHead className="w-[50px]">Select</TableHead>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Timestamp</TableHead>
-                  <TableHead>Input</TableHead>
-                  <TableHead>Output</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {tracesQuery.isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center">
-                      Loading traces...
-                    </TableCell>
-                  </TableRow>
-                ) : tracesQuery.error ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center">
-                      Error: Failed to load traces from the API
-                    </TableCell>
-                  </TableRow>
-                ) : traces.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center">
-                      No traces found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  detailedTraces?.map((trace: any) => (
-                    <TableRow key={trace.id}>
-                      <TableCell>
-                        <Checkbox
-                          checked={selectedTrace?.id === trace.id}
-                          onCheckedChange={() => handleTraceSelection(trace)}
-                        />
-                      </TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {trace.id.substring(0, 6)}...
-                      </TableCell>
-                      <TableCell>
-                        {new Date(trace.timestamp).toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        {trace.input?.substring(0, 50) || "-"}
-                        {trace.input?.length > 50 ? "..." : ""}
-                      </TableCell>
-                      <TableCell>
-                        {trace.output?.substring(0, 50) || "-"}
-                        {trace.output?.length > 50 ? "..." : ""}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+        
+        {/* Conditional rendering - only render TracesTable if we have trace IDs */}
+        {tracesQuery.isLoading ? (
+          <div className="mt-1 rounded-md border p-8 text-center">
+            Loading traces...
           </div>
-        </div>
+        ) : tracesQuery.error ? (
+          <div className="mt-1 rounded-md border p-8 text-center text-destructive">
+            Error: Failed to load traces
+          </div>
+        ) : traceIds.length === 0 ? (
+          <div className="mt-1 rounded-md border p-8 text-center">
+            No traces found
+          </div>
+        ) : (
+          <TracesTable
+            traceIds={traceIds}
+            projectId={projectId}
+            selectedTrace={selectedTrace}
+            onTraceSelect={handleTraceSelection}
+          />
+        )}
       </div>
 
-      {/* Rest of the component remains the same */}
       {/* 3. Action Row */}
       <div className="mt-5">
         <div className="flex flex-row justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2">
-            {/* Dropdown */}
             {currentDropdown && (
               <Select onValueChange={handleItemSelect}>
                 <SelectTrigger className="w-[180px]">
@@ -387,7 +337,6 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
               </Select>
             )}
 
-            {/* Selected items */}
             <div className="flex flex-1 flex-wrap items-center gap-2">
               {selectedItems.map((item) => (
                 <Badge
@@ -412,13 +361,13 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
               disabled={isValidating}
               variant="outline"
             >
-              {isValidating ? "Validating..." : "Validate"}
+              {isValidating ? "Processing..." : "Process & Preview"}
             </Button>
             <Button
               onClick={executeEvaluation}
               disabled={isLoading || !validationData}
             >
-              {isLoading ? "Executing..." : "Execute"}
+              {isLoading ? "Evaluating..." : "Evaluate"}
             </Button>
           </div>
         </div>
@@ -426,18 +375,36 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
 
       {/* 4. Prompt Textbox */}
       <div className="mt-5">
+        <Label htmlFor="prompt-input">
+          {validationData ? "Filled Prompt Preview" : "Evaluation Prompt Template"}
+        </Label>
         <Textarea
           id="prompt-input"
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Enter your evaluation prompt..."
-          rows={4}
+          placeholder="Enter your evaluation prompt template..."
+          rows={6}
           className="mt-2"
           readOnly={!!validationData}
         />
       </div>
 
-      {/* 5. Results Textbox */}
+      {/* 5. Validation Message */}
+      {validationData && (
+        <Card className="mt-5">
+          <div className="p-4">
+            <Label>Processing Status</Label>
+            <div className="mt-2 text-sm text-green-600">
+              {validationData.message}
+            </div>
+            <div className="mt-2 text-xs text-muted-foreground">
+              Session ID: {validationData.session_id}
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {/* 6. Results Textbox */}
       {result && (
         <Card className="mt-5">
           <div className="p-4">
@@ -449,11 +416,18 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
                   ? result
                   : JSON.stringify(result, null, 2)
               }
-              rows={8}
+              rows={10}
               className="mt-2 font-mono text-sm"
             />
           </div>
         </Card>
+      )}
+
+      {/* Error display */}
+      {error && (
+        <div className="mt-4 rounded-md bg-destructive/10 p-4 text-destructive">
+          {error}
+        </div>
       )}
     </div>
   );
