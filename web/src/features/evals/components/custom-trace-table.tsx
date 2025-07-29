@@ -37,7 +37,6 @@ export const TracesTable = ({
     api.traces.byIdWithObservationsAndScores.useQuery(
       {
         traceId: traceId,
-        timestamp: new Date(),
         projectId: projectId,
       },
       {
