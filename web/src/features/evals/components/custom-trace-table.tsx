@@ -29,7 +29,7 @@ interface TracesTableProps {
 const safeGetTraceData = (trace: any): Trace | null => {
   try {
     // Handle completely invalid input
-    if (!trace || typeof trace !== 'object') {
+    if (!trace || typeof trace !== "object") {
       return null;
     }
 
@@ -40,16 +40,19 @@ const safeGetTraceData = (trace: any): Trace | null => {
 
     // Create safe trace object with comprehensive validation
     const safeTrace = {
-      id: typeof trace.id === 'string' && trace.id.trim() ? trace.id.trim() : `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id:
+        typeof trace.id === "string" && trace.id.trim()
+          ? trace.id.trim()
+          : `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: validateTimestamp(trace.timestamp),
       input: safeStringify(trace.input),
       output: safeStringify(trace.output),
-      ...extractSafeProperties(trace) // Safely extract other properties
+      ...extractSafeProperties(trace), // Safely extract other properties
     };
 
     return safeTrace;
   } catch (error) {
-    console.warn('Error in safeGetTraceData:', error);
+    console.warn("Error in safeGetTraceData:", error);
     return null;
   }
 };
@@ -58,21 +61,25 @@ const safeGetTraceData = (trace: any): Trace | null => {
 const validateTimestamp = (timestamp: any): string => {
   try {
     if (!timestamp) return new Date().toISOString();
-    
-    if (typeof timestamp === 'string') {
+
+    if (typeof timestamp === "string") {
       const date = new Date(timestamp);
       return isNaN(date.getTime()) ? new Date().toISOString() : timestamp;
     }
-    
-    if (typeof timestamp === 'number') {
+
+    if (typeof timestamp === "number") {
       const date = new Date(timestamp);
-      return isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+      return isNaN(date.getTime())
+        ? new Date().toISOString()
+        : date.toISOString();
     }
-    
+
     if (timestamp instanceof Date) {
-      return isNaN(timestamp.getTime()) ? new Date().toISOString() : timestamp.toISOString();
+      return isNaN(timestamp.getTime())
+        ? new Date().toISOString()
+        : timestamp.toISOString();
     }
-    
+
     return new Date().toISOString();
   } catch (error) {
     return new Date().toISOString();
@@ -82,19 +89,20 @@ const validateTimestamp = (timestamp: any): string => {
 // Helper to safely stringify any value for input/output
 const safeStringify = (value: any): string => {
   try {
-    if (value === null || value === undefined) return '';
-    if (typeof value === 'string') return value;
-    if (typeof value === 'number' || typeof value === 'boolean') return String(value);
-    if (typeof value === 'object') {
+    if (value === null || value === undefined) return "";
+    if (typeof value === "string") return value;
+    if (typeof value === "number" || typeof value === "boolean")
+      return String(value);
+    if (typeof value === "object") {
       try {
         return JSON.stringify(value);
       } catch (jsonError) {
-        return '[Complex Object]';
+        return "[Complex Object]";
       }
     }
     return String(value);
   } catch (error) {
-    return '[Invalid Data]';
+    return "[Invalid Data]";
   }
 };
 
@@ -102,17 +110,21 @@ const safeStringify = (value: any): string => {
 const extractSafeProperties = (trace: any): Record<string, any> => {
   try {
     const safeProps: Record<string, any> = {};
-    const excludeKeys = ['id', 'timestamp', 'input', 'output'];
-    
+    const excludeKeys = ["id", "timestamp", "input", "output"];
+
     for (const key in trace) {
       if (!excludeKeys.includes(key) && trace.hasOwnProperty(key)) {
         try {
           // Only include primitive values or simple objects
           const value = trace[key];
           if (value !== undefined && value !== null) {
-            if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+            if (
+              typeof value === "string" ||
+              typeof value === "number" ||
+              typeof value === "boolean"
+            ) {
               safeProps[key] = value;
-            } else if (typeof value === 'object' && !Array.isArray(value)) {
+            } else if (typeof value === "object" && !Array.isArray(value)) {
               // Shallow copy for simple objects
               safeProps[key] = { ...value };
             }
@@ -123,7 +135,7 @@ const extractSafeProperties = (trace: any): Record<string, any> => {
         }
       }
     }
-    
+
     return safeProps;
   } catch (error) {
     return {};
@@ -132,23 +144,23 @@ const extractSafeProperties = (trace: any): Record<string, any> => {
 
 // Helper function to safely format timestamp
 const safeFormatTimestamp = (timestamp: string | undefined | null) => {
-  if (!timestamp) return 'Invalid Date';
-  
+  if (!timestamp) return "Invalid Date";
+
   try {
     const date = new Date(timestamp);
     if (isNaN(date.getTime())) {
-      return 'Invalid Date';
+      return "Invalid Date";
     }
     return date.toLocaleString();
   } catch (error) {
-    return 'Invalid Date';
+    return "Invalid Date";
   }
 };
 
 // Helper function to safely truncate ID
 const safeTruncateId = (id: string | undefined | null) => {
-  if (!id || typeof id !== 'string') return 'unknown';
-  return id.length > 8 ? `${id.substring(0, 8)}...` : id;
+  if (!id || typeof id !== "string") return "unknown";
+  return id;
 };
 
 export const TracesTable = ({
@@ -190,7 +202,7 @@ export const TracesTable = ({
             if (query.error || !query.data) return null;
             return query.data;
           } catch (error) {
-            console.warn('Error processing query:', error);
+            console.warn("Error processing query:", error);
             return null;
           }
         })
@@ -199,13 +211,13 @@ export const TracesTable = ({
           try {
             return safeGetTraceData(data);
           } catch (error) {
-            console.warn('Error parsing trace data:', error);
+            console.warn("Error parsing trace data:", error);
             return null;
           }
         })
         .filter(Boolean); // Remove any null results from safeGetTraceData
     } catch (error) {
-      console.error('Critical error in detailedTraces processing:', error);
+      console.error("Critical error in detailedTraces processing:", error);
       return []; // Return empty array instead of crashing
     }
   }, [detailedTracesQueries]);
@@ -225,7 +237,7 @@ export const TracesTable = ({
         onTraceSelect(safeTrace);
       }
     } catch (error) {
-      console.error('Error selecting trace:', error);
+      console.error("Error selecting trace:", error);
     }
   };
 
@@ -316,51 +328,59 @@ export const TracesTable = ({
                 </TableCell>
               </TableRow>
             ) : (
-              detailedTraces.map((trace) => {
-                // Additional safety check for each trace with error boundary
-                try {
-                  if (!trace || !trace.id) {
-                    return null;
-                  }
+              detailedTraces
+                .map((trace) => {
+                  // Additional safety check for each trace with error boundary
+                  try {
+                    if (!trace || !trace.id) {
+                      return null;
+                    }
 
-                  return (
-                    <TableRow key={trace.id} className="hover:bg-muted/50">
-                      <TableCell>
-                        <Checkbox
-                          checked={selectedTrace?.id === trace.id}
-                          onCheckedChange={() => handleTraceSelect(trace)}
-                        />
-                      </TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {safeTruncateId(trace.id)}
-                      </TableCell>
-                      <TableCell className="text-sm">
-                        {safeFormatTimestamp(trace.timestamp)}
-                      </TableCell>
-                      <TableCell className="max-w-[200px]">
-                        <div className="truncate text-sm">
-                          {trace.input || "-"}
-                        </div>
-                      </TableCell>
-                      <TableCell className="max-w-[200px]">
-                        <div className="truncate text-sm">
-                          {trace.output || "-"}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                } catch (rowError) {
-                  console.warn('Error rendering trace row:', rowError, trace);
-                  // Return a fallback row instead of crashing
-                  return (
-                    <TableRow key={`error-${Math.random()}`} className="bg-red-50">
-                      <TableCell colSpan={5} className="py-2 text-center text-sm text-red-600">
-                        Error displaying trace data
-                      </TableCell>
-                    </TableRow>
-                  );
-                }
-              }).filter(Boolean) // Remove any null results
+                    return (
+                      <TableRow key={trace.id} className="hover:bg-muted/50">
+                        <TableCell>
+                          <Checkbox
+                            checked={selectedTrace?.id === trace.id}
+                            onCheckedChange={() => handleTraceSelect(trace)}
+                          />
+                        </TableCell>
+                        <TableCell className="font-mono text-xs">
+                          {safeTruncateId(trace.id)}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {safeFormatTimestamp(trace.timestamp)}
+                        </TableCell>
+                        <TableCell className="max-w-[200px]">
+                          <div className="truncate text-sm">
+                            {trace.input || "-"}
+                          </div>
+                        </TableCell>
+                        <TableCell className="max-w-[200px]">
+                          <div className="truncate text-sm">
+                            {trace.output || "-"}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  } catch (rowError) {
+                    console.warn("Error rendering trace row:", rowError, trace);
+                    // Return a fallback row instead of crashing
+                    return (
+                      <TableRow
+                        key={`error-${Math.random()}`}
+                        className="bg-red-50"
+                      >
+                        <TableCell
+                          colSpan={5}
+                          className="py-2 text-center text-sm text-red-600"
+                        >
+                          Error displaying trace data
+                        </TableCell>
+                      </TableRow>
+                    );
+                  }
+                })
+                .filter(Boolean) // Remove any null results
             )}
           </TableBody>
         </Table>
