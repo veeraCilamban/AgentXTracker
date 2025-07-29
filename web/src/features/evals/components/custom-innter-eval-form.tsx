@@ -97,49 +97,28 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
     },
   );
 
-  useEffect(() => {
-    if (tracesQuery.data?.traces) {
-      // Fetch details for each trace
-      const fetchTraceDetails = () => {
-        const detailedTraces = tracesQuery.data.traces.map((trace) => {
-          try {
-            const response = api.traces.byIdWithObservationsAndScores.useQuery(
-              {
-                traceId: trace.id,
-                timestamp: new Date(),
-                projectId: projectId,
-              },
-              {
-                retry(failureCount, error) {
-                  if (
-                    error.data?.code === "UNAUTHORIZED" ||
-                    error.data?.code === "NOT_FOUND"
-                  )
-                    return false;
-                  return failureCount < 3;
-                },
-              },
-            );
+  const trac = tracesQuery.data?.traces || [{ id: "hello" }];
 
-            return response.data;
-          } catch (error) {
-            console.error(
-              `Failed to fetch details for trace ${trace.id}`,
-              error,
-            );
-            return {
-              ...trace,
-              input: "Failed to load",
-              output: "Failed to load",
-            };
-          }
-        });
-        setTraces(detailedTraces);
-      };
-
-      fetchTraceDetails();
-    }
-  }, [tracesQuery.data, projectId]);
+  const detailedTraces = trac.map((trace) => {
+    const response = api.traces.byIdWithObservationsAndScores.useQuery(
+      {
+        traceId: trace.id,
+        timestamp: new Date(),
+        projectId: projectId,
+      },
+      {
+        retry(failureCount, error) {
+          if (
+            error.data?.code === "UNAUTHORIZED" ||
+            error.data?.code === "NOT_FOUND"
+          )
+            return false;
+          return failureCount < 3;
+        },
+      },
+    );
+    return response?.data;
+  });
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -318,63 +297,67 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
           Sample over the last 24 hours that match these filters
         </p>
         <div className="mt-1 rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[50px]">Select</TableHead>
-                <TableHead>ID</TableHead>
-                <TableHead>Timestamp</TableHead>
-                <TableHead>Input</TableHead>
-                <TableHead>Output</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tracesQuery.isLoading ? (
+          <div className="h-[400px] overflow-auto">
+            {" "}
+            {/* Adjust height as needed */}
+            <Table>
+              <TableHeader className="sticky top-0 z-10 bg-background">
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center">
-                    Loading traces...
-                  </TableCell>
+                  <TableHead className="w-[50px]">Select</TableHead>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Timestamp</TableHead>
+                  <TableHead>Input</TableHead>
+                  <TableHead>Output</TableHead>
                 </TableRow>
-              ) : tracesQuery.error ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center">
-                    Error: Failed to load traces from the API
-                  </TableCell>
-                </TableRow>
-              ) : traces.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center">
-                    No traces found
-                  </TableCell>
-                </TableRow>
-              ) : (
-                traces.map((trace) => (
-                  <TableRow key={trace.id}>
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedTrace?.id === trace.id}
-                        onCheckedChange={() => handleTraceSelection(trace)}
-                      />
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {trace.id.substring(0, 6)}...
-                    </TableCell>
-                    <TableCell>
-                      {new Date(trace.timestamp).toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      {trace.input?.substring(0, 50) || "-"}
-                      {trace.input?.length > 50 ? "..." : ""}
-                    </TableCell>
-                    <TableCell>
-                      {trace.output?.substring(0, 50) || "-"}
-                      {trace.output?.length > 50 ? "..." : ""}
+              </TableHeader>
+              <TableBody>
+                {tracesQuery.isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center">
+                      Loading traces...
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                ) : tracesQuery.error ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center">
+                      Error: Failed to load traces from the API
+                    </TableCell>
+                  </TableRow>
+                ) : traces.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center">
+                      No traces found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  detailedTraces?.map((trace: any) => (
+                    <TableRow key={trace.id}>
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedTrace?.id === trace.id}
+                          onCheckedChange={() => handleTraceSelection(trace)}
+                        />
+                      </TableCell>
+                      <TableCell className="font-mono text-xs">
+                        {trace.id.substring(0, 6)}...
+                      </TableCell>
+                      <TableCell>
+                        {new Date(trace.timestamp).toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {trace.input?.substring(0, 50) || "-"}
+                        {trace.input?.length > 50 ? "..." : ""}
+                      </TableCell>
+                      <TableCell>
+                        {trace.output?.substring(0, 50) || "-"}
+                        {trace.output?.length > 50 ? "..." : ""}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
 
