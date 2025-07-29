@@ -134,6 +134,7 @@ export type TracesTableProps = {
   hideControls?: boolean;
   externalFilterState?: FilterState;
   externalDateRange?: TableDateRange;
+  onTraceSelect?: (trace: TracesTableRow) => void; // Add this prop
 };
 
 export default function TracesTable({
