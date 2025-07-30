@@ -10,157 +10,164 @@ import {
   TableRow,
 } from "@/src/components/ui/table";
 
-type Trace = {
+type Score = {
+  id: string;
+  timestamp: string;
+  name: string;
+  value: number;
+  comment?: string;
+  [key: string]: any;
+};
+
+type Observation = {
+  id: string;
+  type: string;
+  name: string;
+  startTime: string;
+  endTime: string;
+  [key: string]: any;
+};
+
+export type Trace = {
   id: string;
   timestamp: string;
   input: string;
   output: string;
+  projectId: string;
+  name: string;
+  environment: string;
+  tags: string[];
+  bookmarked: boolean;
+  userId: string;
+  sessionId: string;
+  public: boolean;
+  metadata: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
+  scores: Score[];
+  observations: Observation[];
+  latency: number;
   [key: string]: any;
 };
 
 interface TracesTableProps {
   traceIds: string[];
   projectId: string;
-  selectedTrace: Trace | null;
-  onTraceSelect: (trace: Trace) => void;
+  selectedTrace: { trace: Trace } | null;
+  onTraceSelect: (trace: { trace: Trace }) => void;
 }
 
-// Helper function to safely get trace data with fallbacks
-const safeGetTraceData = (trace: any): Trace | null => {
-  try {
-    // Handle completely invalid input
-    if (!trace || typeof trace !== "object") {
-      return null;
-    }
-
-    // Handle arrays or other unexpected structures
-    if (Array.isArray(trace)) {
-      return null;
-    }
-
-    // Create safe trace object with comprehensive validation
-    const safeTrace = {
-      id:
-        typeof trace.id === "string" && trace.id.trim()
-          ? trace.id.trim()
-          : `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: validateTimestamp(trace.timestamp),
-      input: safeStringify(trace.input),
-      output: safeStringify(trace.output),
-      ...extractSafeProperties(trace), // Safely extract other properties
-    };
-
-    return safeTrace;
-  } catch (error) {
-    console.warn("Error in safeGetTraceData:", error);
-    return null;
-  }
-};
-
-// Helper to validate and format timestamp
 const validateTimestamp = (timestamp: any): string => {
   try {
     if (!timestamp) return new Date().toISOString();
 
-    if (typeof timestamp === "string") {
+    if (typeof timestamp === 'string' || typeof timestamp === 'number') {
       const date = new Date(timestamp);
-      return isNaN(date.getTime()) ? new Date().toISOString() : timestamp;
-    }
-
-    if (typeof timestamp === "number") {
-      const date = new Date(timestamp);
-      return isNaN(date.getTime())
-        ? new Date().toISOString()
-        : date.toISOString();
+      return isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
     }
 
     if (timestamp instanceof Date) {
-      return isNaN(timestamp.getTime())
-        ? new Date().toISOString()
-        : timestamp.toISOString();
+      return isNaN(timestamp.getTime()) ? new Date().toISOString() : timestamp.toISOString();
     }
 
     return new Date().toISOString();
-  } catch (error) {
+  } catch {
     return new Date().toISOString();
   }
 };
 
-// Helper to safely stringify any value for input/output
 const safeStringify = (value: any): string => {
   try {
     if (value === null || value === undefined) return "";
     if (typeof value === "string") return value;
-    if (typeof value === "number" || typeof value === "boolean")
-      return String(value);
-    if (typeof value === "object") {
-      try {
-        return JSON.stringify(value);
-      } catch (jsonError) {
-        return "[Complex Object]";
-      }
-    }
-    return String(value);
-  } catch (error) {
+    if (typeof value === "number" || typeof value === "boolean") return String(value);
+    return JSON.stringify(value, null, 2);
+  } catch {
     return "[Invalid Data]";
   }
 };
 
-// Helper to safely extract other properties without breaking
-const extractSafeProperties = (trace: any): Record<string, any> => {
+const safeGetTraceData = (rawTrace: any): { trace: Trace } | null => {
   try {
-    const safeProps: Record<string, any> = {};
-    const excludeKeys = ["id", "timestamp", "input", "output"];
+    if (!rawTrace || typeof rawTrace !== 'object' || Array.isArray(rawTrace)) {
+      return null;
+    }
 
-    for (const key in trace) {
-      if (!excludeKeys.includes(key) && trace.hasOwnProperty(key)) {
+    // Handle the case where the trace might already be wrapped
+    const traceData = rawTrace.trace || rawTrace;
+
+    const safeTrace: Trace = {
+      id: typeof traceData.id === 'string' ? traceData.id : `temp-${Date.now()}`,
+      timestamp: validateTimestamp(traceData.timestamp),
+      input: safeStringify(traceData.input),
+      output: safeStringify(traceData.output),
+      projectId: traceData.projectId || '',
+      name: traceData.name || '',
+      environment: traceData.environment || 'default',
+      tags: Array.isArray(traceData.tags) ? traceData.tags : [],
+      bookmarked: !!traceData.bookmarked,
+      userId: traceData.userId || '',
+      sessionId: traceData.sessionId || '',
+      public: !!traceData.public,
+      metadata: typeof traceData.metadata === 'string' 
+        ? traceData.metadata 
+        : JSON.stringify(traceData.metadata || {}, null, 2),
+      createdAt: traceData.createdAt ? new Date(traceData.createdAt) : new Date(),
+      updatedAt: traceData.updatedAt ? new Date(traceData.updatedAt) : new Date(),
+      scores: Array.isArray(traceData.scores) 
+        ? traceData.scores.map((score: any) => ({
+            id: score.id || '',
+            timestamp: validateTimestamp(score.timestamp),
+            name: score.name || '',
+            value: typeof score.value === 'number' ? score.value : 0,
+            comment: score.comment || '',
+            ...score
+          }))
+        : [],
+      observations: Array.isArray(traceData.observations)
+        ? traceData.observations.map((obs: any) => ({
+            id: obs.id || '',
+            type: obs.type || '',
+            name: obs.name || '',
+            startTime: validateTimestamp(obs.startTime),
+            endTime: validateTimestamp(obs.endTime),
+            ...obs
+          }))
+        : [],
+      latency: typeof traceData.latency === 'number' ? traceData.latency : 0,
+    };
+
+    // Preserve all other properties
+    for (const key in traceData) {
+      if (!safeTrace.hasOwnProperty(key) && traceData.hasOwnProperty(key)) {
         try {
-          // Only include primitive values or simple objects
-          const value = trace[key];
-          if (value !== undefined && value !== null) {
-            if (
-              typeof value === "string" ||
-              typeof value === "number" ||
-              typeof value === "boolean"
-            ) {
-              safeProps[key] = value;
-            } else if (typeof value === "object" && !Array.isArray(value)) {
-              // Shallow copy for simple objects
-              safeProps[key] = { ...value };
-            }
-          }
-        } catch (propError) {
-          // Skip problematic properties
-          continue;
+          safeTrace[key] = traceData[key];
+        } catch (error) {
+          console.warn(`Failed to copy property ${key}`, error);
         }
       }
     }
 
-    return safeProps;
+    return { trace: safeTrace };
   } catch (error) {
-    return {};
+    console.error("Error in safeGetTraceData:", error);
+    return null;
   }
 };
 
-// Helper function to safely format timestamp
 const safeFormatTimestamp = (timestamp: string | undefined | null) => {
   if (!timestamp) return "Invalid Date";
-
   try {
     const date = new Date(timestamp);
-    if (isNaN(date.getTime())) {
-      return "Invalid Date";
-    }
-    return date.toLocaleString();
-  } catch (error) {
+    return isNaN(date.getTime()) ? "Invalid Date" : date.toLocaleString();
+  } catch {
     return "Invalid Date";
   }
 };
 
-// Helper function to safely truncate ID
 const safeTruncateId = (id: string | undefined | null) => {
   if (!id || typeof id !== "string") return "unknown";
-  return id;
+  return id.length > 8 ? `${id.substring(0, 4)}...${id.substring(id.length - 4)}` : id;
 };
 
 export const TracesTable = ({
@@ -169,8 +176,6 @@ export const TracesTable = ({
   selectedTrace,
   onTraceSelect,
 }: TracesTableProps) => {
-  // Now we can safely use hooks for each trace ID since this component
-  // is only rendered when traceIds is not empty
   const detailedTracesQueries = traceIds.map((traceId) =>
     api.traces.byIdWithObservationsAndScores.useQuery(
       {
@@ -188,17 +193,15 @@ export const TracesTable = ({
           }
           return failureCount < 3;
         },
-      },
-    ),
+      }
+    )
   );
 
-  // Get successful trace data with safe parsing and comprehensive error handling
   const detailedTraces = useMemo(() => {
     try {
       return detailedTracesQueries
         .map((query) => {
           try {
-            // Handle query errors or invalid responses
             if (query.error || !query.data) return null;
             return query.data;
           } catch (error) {
@@ -207,30 +210,19 @@ export const TracesTable = ({
           }
         })
         .filter(Boolean)
-        .map((data) => {
-          try {
-            return safeGetTraceData(data);
-          } catch (error) {
-            console.warn("Error parsing trace data:", error);
-            return null;
-          }
-        })
-        .filter(Boolean); // Remove any null results from safeGetTraceData
+        .map((data) => safeGetTraceData(data))
+        .filter(Boolean) as { trace: Trace }[];
     } catch (error) {
       console.error("Critical error in detailedTraces processing:", error);
-      return []; // Return empty array instead of crashing
+      return [];
     }
   }, [detailedTracesQueries]);
 
-  // Loading state - check if any query is still loading
   const isLoading = detailedTracesQueries.some((query) => query.isLoading);
-
-  // Error state - check if any query has an error
   const hasError = detailedTracesQueries.some((query) => query.error);
   const errorQueries = detailedTracesQueries.filter((query) => query.error);
 
-  // Safe trace selection handler
-  const handleTraceSelect = (trace: any) => {
+  const handleTraceSelect = (trace: Trace) => {
     try {
       const safeTrace = safeGetTraceData(trace);
       if (safeTrace && onTraceSelect) {
@@ -241,7 +233,6 @@ export const TracesTable = ({
     }
   };
 
-  // Show loading state
   if (isLoading) {
     return (
       <div className="mt-1 rounded-md border">
@@ -269,7 +260,6 @@ export const TracesTable = ({
     );
   }
 
-  // Show error state if all queries failed
   if (hasError && detailedTraces.length === 0) {
     return (
       <div className="mt-1 rounded-md border">
@@ -306,7 +296,6 @@ export const TracesTable = ({
     );
   }
 
-  // Render the traces table
   return (
     <div className="mt-1 rounded-md border">
       <div className="h-[400px] overflow-auto">
@@ -328,65 +317,41 @@ export const TracesTable = ({
                 </TableCell>
               </TableRow>
             ) : (
-              detailedTraces
-                .map((trace) => {
-                  // Additional safety check for each trace with error boundary
-                  try {
-                    if (!trace || !trace.id) {
-                      return null;
-                    }
+              detailedTraces.map(({ trace }) => {
+                if (!trace || !trace.id) return null;
 
-                    return (
-                      <TableRow key={trace.id} className="hover:bg-muted/50">
-                        <TableCell>
-                          <Checkbox
-                            checked={selectedTrace?.id === trace.id}
-                            onCheckedChange={() => handleTraceSelect(trace)}
-                          />
-                        </TableCell>
-                        <TableCell className="font-mono text-xs">
-                          {safeTruncateId(trace.id)}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {safeFormatTimestamp(trace.timestamp)}
-                        </TableCell>
-                        <TableCell className="max-w-[200px]">
-                          <div className="truncate text-sm">
-                            {trace.input || "-"}
-                          </div>
-                        </TableCell>
-                        <TableCell className="max-w-[200px]">
-                          <div className="truncate text-sm">
-                            {trace.output || "-"}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  } catch (rowError) {
-                    console.warn("Error rendering trace row:", rowError, trace);
-                    // Return a fallback row instead of crashing
-                    return (
-                      <TableRow
-                        key={`error-${Math.random()}`}
-                        className="bg-red-50"
-                      >
-                        <TableCell
-                          colSpan={5}
-                          className="py-2 text-center text-sm text-red-600"
-                        >
-                          Error displaying trace data
-                        </TableCell>
-                      </TableRow>
-                    );
-                  }
-                })
-                .filter(Boolean) // Remove any null results
+                return (
+                  <TableRow key={trace.id} className="hover:bg-muted/50">
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedTrace?.trace?.id === trace.id}
+                        onCheckedChange={() => handleTraceSelect(trace)}
+                      />
+                    </TableCell>
+                    <TableCell className="font-mono text-xs">
+                      {safeTruncateId(trace.id)}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {safeFormatTimestamp(trace.timestamp)}
+                    </TableCell>
+                    <TableCell className="max-w-[200px]">
+                      <div className="truncate text-sm">
+                        {trace.input || "-"}
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-[200px]">
+                      <div className="truncate text-sm">
+                        {trace.output || "-"}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
       </div>
 
-      {/* Show partial error state if some queries failed but we have some data */}
       {hasError && detailedTraces.length > 0 && (
         <div className="border-t bg-amber-50 px-4 py-2 text-sm text-amber-600">
           Warning: {errorQueries.length} out of {traceIds.length} traces failed
