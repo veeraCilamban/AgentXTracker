@@ -46,8 +46,8 @@ async function handleValidation(data: {
   // Determine the API endpoint based on evaluation type
   const isQualityEval = evaluationType === "autox-agent-quality";
   const endpoint = isQualityEval
-    ? "http://10.0.0.141:8000/process_and_preview_quality"
-    : "http://10.0.0.141:8000/process_and_preview_performance";
+    ? "http://10.0.0.141:8000/process-and-preview-quality"
+    : "http://10.0.0.141:8000/process-and-preview-performance";
 
   // Add prompt template
   formData.append("prompt_template", prompt);
@@ -117,8 +117,8 @@ async function handleEvaluation(data: {
   // Determine the API endpoint based on evaluation type
   const isQualityEval = evaluationType === "autox-agent-quality";
   const endpoint = isQualityEval
-    ? "http://10.0.0.141:8000/evaluate_quality"
-    : "http://10.0.0.141:8000/evaluate_performance";
+    ? "http://10.0.0.141:8000/evaluate-quality"
+    : "http://10.0.0.141:8000/evaluate-performance";
 
   const response = await fetch(endpoint, {
     method: "POST",
