@@ -1,12 +1,23 @@
 import React from "react";
 
+// Define the result type
+type EvaluationResult =
+  | string
+  | { evaluation: string; [key: string]: unknown }
+  | Record<string, unknown>
+  | null;
+
+interface MarkdownResultsDisplayProps {
+  result: EvaluationResult;
+}
+
 // Simple markdown renderer for basic markdown elements
-const renderMarkdown = (text) => {
-  if (!text) return "";
+const renderMarkdown = (text: string): React.ReactElement[] => {
+  if (!text) return [];
 
   // Split by lines and process each line
   const lines = text.split("\n");
-  const elements = [];
+  const elements: React.ReactElement[] = [];
   let currentIndex = 0;
 
   for (let i = 0; i < lines.length; i++) {
@@ -78,7 +89,9 @@ const renderMarkdown = (text) => {
   return elements;
 };
 
-export const MarkdownResultsDisplay = ({ result }) => {
+export const MarkdownResultsDisplay: React.FC<MarkdownResultsDisplayProps> = ({
+  result,
+}) => {
   if (!result) return null;
 
   // Extract markdown content from the result
@@ -86,7 +99,12 @@ export const MarkdownResultsDisplay = ({ result }) => {
 
   if (typeof result === "string") {
     markdownContent = result;
-  } else if (result && typeof result === "object" && result.evaluation) {
+  } else if (
+    result &&
+    typeof result === "object" &&
+    "evaluation" in result &&
+    typeof result.evaluation === "string"
+  ) {
     // Extract the evaluation string and process escape characters
     markdownContent = result.evaluation.replace(/\\n/g, "\n");
   } else {
