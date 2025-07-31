@@ -14,6 +14,7 @@ import { Label } from "@/src/components/ui/label";
 import { Badge } from "@/src/components/ui/badge";
 import { X, Check, FileText } from "lucide-react";
 import { type Trace, TracesTable } from "./custom-trace-table";
+import { MarkdownResultsDisplay } from "./custom-markdown-display";
 
 interface AutoXEvalFormProps {
   projectId: string;
@@ -381,21 +382,10 @@ export const AutoXEvalForm = ({ projectId, id }: AutoXEvalFormProps) => {
 
       {/* 6. Results Textbox */}
       {result && (
-        <Card className="mt-5">
-          <div className="p-4">
-            <Label>Evaluation Results</Label>
-            <Textarea
-              readOnly
-              value={
-                typeof result === "string"
-                  ? result
-                  : JSON.stringify(result, null, 2)
-              }
-              rows={10}
-              className="mt-2 font-mono text-sm"
-            />
-          </div>
-        </Card>
+        <div className="mt-4">
+          <Label>Results</Label>
+          <MarkdownResultsDisplay result={result} />
+        </div>
       )}
 
       {/* Error display */}

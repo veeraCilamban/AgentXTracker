@@ -167,7 +167,7 @@ const safeFormatTimestamp = (timestamp: string | undefined | null) => {
 
 const safeTruncateId = (id: string | undefined | null) => {
   if (!id || typeof id !== "string") return "unknown";
-  return id.length > 8 ? `${id.substring(0, 4)}...${id.substring(id.length - 4)}` : id;
+  return id;
 };
 
 export const TracesTable = ({
