@@ -171,7 +171,7 @@ export const VersionLabel = ({ className }: { className?: string }) => {
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link
-                href="https://langfuse.com/docs/deployment/self-host#update"
+                href="#"
                 target="_blank"
               >
                 <HardDriveDownload size={16} className="mr-2" />

@@ -300,7 +300,7 @@ export default function PromptVersionTable({
       headerTooltip: {
         description:
           "The last time this prompt version was used in a generation. See docs for details on how to link generations/traces to prompt versions.",
-        href: "https://langfuse.com/docs/prompts",
+        href: "#",
       },
       cell: ({ row }) => {
         const value: number | undefined | null = row.getValue("lastUsed");
@@ -319,7 +319,7 @@ export default function PromptVersionTable({
       headerTooltip: {
         description:
           "The first time this prompt version was used in a generation. See docs for details on how to link generations/traces to prompt versions.",
-        href: "https://langfuse.com/docs/prompts",
+        href: "#",
       },
       cell: ({ row }) => {
         const value: number | undefined | null = row.getValue("firstUsed");
@@ -386,7 +386,7 @@ export default function PromptVersionTable({
         help: {
           description:
             "You can use this prompt within your application through the Langfuse SDKs and integrations. Refer to the documentation for more information.",
-          href: "https://langfuse.com/docs/prompts",
+          href: "#",
         },
         breadcrumb: [
           {

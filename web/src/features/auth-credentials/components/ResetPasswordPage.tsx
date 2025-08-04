@@ -101,7 +101,7 @@ export function ResetPasswordPage({
         message="Password reset is not configured on this instance"
         additionalButton={{
           label: "Setup instructions",
-          href: "https://langfuse.com/docs/deployment/self-host#emailpassword",
+          href: "#",
         }}
       />
     );

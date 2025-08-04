@@ -74,7 +74,7 @@ export const QuickstartExamples = (p: {
           <p className="mt-3 text-xs text-muted-foreground">
             See{" "}
             <a
-              href="https://langfuse.com/docs/get-started"
+              href="#"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -83,7 +83,7 @@ export const QuickstartExamples = (p: {
             </a>{" "}
             and{" "}
             <a
-              href="https://langfuse.com/docs/sdk/python"
+              href="#"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -101,7 +101,7 @@ export const QuickstartExamples = (p: {
           <p className="mt-3 text-xs text-muted-foreground">
             See{" "}
             <a
-              href="https://langfuse.com/docs/get-started"
+              href="#"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -110,7 +110,7 @@ export const QuickstartExamples = (p: {
             </a>{" "}
             and{" "}
             <a
-              href="https://langfuse.com/docs/sdk/typescript"
+              href="#"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -139,7 +139,7 @@ export const QuickstartExamples = (p: {
           <p className="mt-2 text-xs text-muted-foreground">
             Use the OpenAI SDK as you would normally. See the{" "}
             <a
-              href="https://langfuse.com/docs/integrations/openai"
+              href="#"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -162,7 +162,7 @@ export const QuickstartExamples = (p: {
           <p className="mt-2 text-xs text-muted-foreground">
             See the{" "}
             <a
-              href="https://langfuse.com/docs/integrations/langchain/python"
+              href="#"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -185,7 +185,7 @@ export const QuickstartExamples = (p: {
           <p className="mt-2 text-xs text-muted-foreground">
             See the{" "}
             <a
-              href="https://langfuse.com/docs/integrations/langchain/typescript"
+              href="#"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -208,7 +208,7 @@ export const QuickstartExamples = (p: {
             </a>{" "}
             or one of the{" "}
             <a
-              href="https://langfuse.com/docs/integrations"
+              href="#"
               className="underline"
               target="_blank"
               rel="noopener noreferrer"
@@ -232,7 +232,7 @@ export const QuickstartExamples = (p: {
         for common resolutions,{" "}
         <Link
           className="underline"
-          href="https://langfuse.com/docs/ask-ai"
+          href="#"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -241,7 +241,7 @@ export const QuickstartExamples = (p: {
         or{" "}
         <Link
           className="underline"
-          href="https://langfuse.com/support"
+          href="#"
           target="_blank"
           rel="noopener noreferrer"
         >

@@ -39,7 +39,7 @@ export const SupportMenuDropdown = () => {
     const items: (SupportMenuItem | "separator")[] = [
       {
         title: "Ask AI",
-        pathname: "https://langfuse.com/docs/ask-ai",
+        pathname: "#",
         icon: Sparkles,
       },
     ];

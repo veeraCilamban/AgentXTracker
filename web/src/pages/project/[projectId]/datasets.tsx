@@ -31,7 +31,7 @@ export default function Datasets() {
         help: {
           description:
             "Datasets in Langfuse are a collection of inputs (and expected outputs) of an LLM application. They are used to benchmark new releases before deployment to production. See docs to learn more.",
-          href: "https://langfuse.com/docs/datasets",
+          href: "#",
         },
         actionButtonsRight: (
           <DatasetActionButton projectId={projectId} mode="create" />

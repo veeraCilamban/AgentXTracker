@@ -65,7 +65,7 @@ export default function EvaluatorsPage() {
           help: {
             description:
               "Configure a langfuse managed or custom evaluator to evaluate incoming traces.",
-            href: "https://langfuse.com/docs/scores/model-based-evals",
+            href: "#",
           },
         }}
         scrollable
@@ -83,7 +83,7 @@ export default function EvaluatorsPage() {
           help: {
             description:
               "Configure a langfuse managed or custom evaluator to evaluate incoming traces.",
-            href: "https://langfuse.com/docs/scores/model-based-evals",
+            href: "#",
           },
           tabsProps: {
             tabs: getEvalsTabs(projectId),

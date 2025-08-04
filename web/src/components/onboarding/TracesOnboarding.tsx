@@ -32,7 +32,7 @@ export function TracesOnboarding({ projectId }: TracesOnboardingProps) {
     {
       title: "Open and Multi-modal",
       description:
-        "Langfuse traces can include images, audio, and other modalities. You can fully customize them to fit your needs",
+        "Autox traces can include images, audio, and other modalities. You can fully customize them to fit your needs",
       icon: <Zap className="h-4 w-4" />,
     },
   ];
@@ -40,7 +40,7 @@ export function TracesOnboarding({ projectId }: TracesOnboardingProps) {
   return (
     <SplashScreen
       title="Get Started with LLM Tracing"
-      description="Traces allow you to track every LLM call and other relevant logic in your app/agent. Nested traces in Langfuse help to understand what is happening and identify the root cause of problems."
+      description="Traces allow you to track every LLM call and other relevant logic in your app/agent. Nested traces in Autox help to understand what is happening and identify the root cause of problems."
       valuePropositions={valuePropositions}
       primaryAction={{
         label: "Configure Tracing",
@@ -48,7 +48,7 @@ export function TracesOnboarding({ projectId }: TracesOnboardingProps) {
       }}
       secondaryAction={{
         label: "View Documentation",
-        href: "https://langfuse.com/docs/tracing",
+        href: "#",
       }}
       videoSrc="https://static.langfuse.com/prod-assets/onboarding/tracing-overview-v1.mp4"
     />

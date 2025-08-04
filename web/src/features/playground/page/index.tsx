@@ -13,7 +13,7 @@ export default function PlaygroundPage() {
           title: "Playground",
           help: {
             description: "A sandbox to test and iterate your prompts",
-            href: "https://langfuse.com/docs/playground",
+            href: "#",
           },
           actionButtonsRight: (
             <>

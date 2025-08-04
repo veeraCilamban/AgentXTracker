@@ -99,7 +99,7 @@ export function AppSidebar({
 //         <AlertDescription className="overflow-hidden text-ellipsis whitespace-nowrap text-xs">
 //           View-only{" "}
 //           <Link
-//             href="https://langfuse.com/docs/demo"
+//             href="#"
 //             target="_blank"
 //             className="underline"
 //           >

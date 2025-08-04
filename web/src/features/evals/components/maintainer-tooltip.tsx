@@ -10,8 +10,8 @@ import { UserCircle2Icon } from "lucide-react";
 function MaintainerIcon({ maintainer }: { maintainer: string }) {
   if (maintainer.includes("Ragas")) {
     return <RagasLogoIcon />;
-  } else if (maintainer.includes("Langfuse")) {
-    return <LangfuseIcon size={16} />;
+  } else if (maintainer.includes("Autox")) {
+    return <LangfuseIcon size={24} />;
   } else {
     return <UserCircle2Icon className="h-4 w-4" />;
   }
