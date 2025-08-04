@@ -782,7 +782,7 @@ export const InnerEvaluatorForm = (props: {
                               "Variable in the template to be replaced with the mapped data."
                             }
                             href={
-                              "https://langfuse.com/docs/scores/model-based-evals"
+                              "#"
                             }
                           />
                         </div>
@@ -798,7 +798,7 @@ export const InnerEvaluatorForm = (props: {
                                   "Langfuse object to retrieve the data from."
                                 }
                                 href={
-                                  "https://langfuse.com/docs/scores/model-based-evals"
+                                  "#"
                                 }
                               />
                               <FormItem className="w-2/3">
@@ -861,7 +861,7 @@ export const InnerEvaluatorForm = (props: {
                                       "Name of the Langfuse object to retrieve the data from."
                                     }
                                     href={
-                                      "https://langfuse.com/docs/scores/model-based-evals"
+                                      "#"
                                     }
                                   />
                                   <FormItem className="w-2/3">
@@ -961,7 +961,7 @@ export const InnerEvaluatorForm = (props: {
                                   "Variable on the Langfuse object to insert into the template."
                                 }
                                 href={
-                                  "https://langfuse.com/docs/scores/model-based-evals"
+                                  "#"
                                 }
                               />
                               <FormItem className="w-2/3">
@@ -1029,7 +1029,7 @@ export const InnerEvaluatorForm = (props: {
                                     "Optional selection: Use JsonPath syntax to select from a JSON object stored on a trace. If not selected, we will pass the entire object into the prompt."
                                   }
                                   href={
-                                    "https://langfuse.com/docs/scores/model-based-evals"
+                                    "#"
                                   }
                                 />
                                 <FormItem className="w-2/3">

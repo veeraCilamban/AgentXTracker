@@ -256,7 +256,7 @@ const Integrations = (props: { projectId: string }) => {
           <PostHogLogo className="mb-4 w-40 text-foreground" />
           <p className="mb-4 text-sm text-primary">
             We have teamed up with PostHog (OSS product analytics) to make
-            Langfuse Events/Metrics available in your Posthog Dashboards.
+            Autox Events/Metrics available in your Posthog Dashboards.
           </p>
           <div className="flex items-center gap-2">
             <ActionButton
@@ -268,7 +268,7 @@ const Integrations = (props: { projectId: string }) => {
             </ActionButton>
             <Button asChild variant="ghost">
               <Link
-                href="https://langfuse.com/docs/analytics/posthog"
+                href="#"
                 target="_blank"
               >
                 Integration Docs ↗
@@ -294,7 +294,7 @@ const Integrations = (props: { projectId: string }) => {
             </ActionButton>
             <Button asChild variant="ghost">
               <Link
-                href="https://langfuse.com/docs/query-traces#blob-storage"
+                href="#"
                 target="_blank"
               >
                 Integration Docs ↗

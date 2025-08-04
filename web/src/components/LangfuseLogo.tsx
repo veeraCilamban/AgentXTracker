@@ -12,15 +12,27 @@ export const LangfuseIcon = ({
   size?: number;
   className?: string;
 }) => (
-  // eslint-disable-next-line @next/next/no-img-element
-  <img
-    src={`/assets/AutoXLight.svg`}
-    width={size}
-    height={size}
-    alt="Langfuse Icon"
-    className={className}
-  />
+  <>
+    {/* Light mode icon */}
+    <img
+      src="/assets/AutoXLight.svg"
+      width={size}
+      height={size}
+      alt="AutoX Light Icon"
+      className={cn(" hidden dark:block", className)}
+    />
+    
+    {/* Dark mode icon */}
+    <img
+      src="/assets/AutoXDark.svg"
+      width={size}
+      height={size}
+      alt="AutoX Dark Icon"
+      className={cn(" dark:hidden", className)}
+    />
+  </>
 );
+
 
 const LangfuseLogotypeOrCustomized = ({ size }: { size: "sm" | "xl" }) => {
   const uiCustomization = useUiCustomization();

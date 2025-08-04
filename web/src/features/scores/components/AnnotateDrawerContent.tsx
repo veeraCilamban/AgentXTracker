@@ -142,7 +142,7 @@ function AnnotateHeader({
       title="Annotate"
       help={{
         description,
-        href: "https://langfuse.com/docs/scores/manually",
+        href: "#",
         className: "leading-relaxed",
       }}
       actionButtons={[

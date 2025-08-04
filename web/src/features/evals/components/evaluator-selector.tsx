@@ -173,7 +173,7 @@ export function EvaluatorSelector({
 
         {filteredTemplates.langfuse.length > 0 && (
           <>
-            <InputCommandGroup heading="Langfuse managed evaluators">
+            <InputCommandGroup heading="Autox managed evaluators">
               {filteredTemplates.langfuse.map(([name, templateData]) => {
                 const latestVersion = templateData[templateData.length - 1];
                 const isInvalid =
@@ -200,7 +200,7 @@ export function EvaluatorSelector({
                   >
                     <div className="mr-1">{name}</div>
                     <MaintainerTooltip
-                      maintainer={getMaintainer(latestVersion)}
+                      maintainer={"Autox Maintained"}
                     />
                     {isInvalid && (
                       <Tooltip>

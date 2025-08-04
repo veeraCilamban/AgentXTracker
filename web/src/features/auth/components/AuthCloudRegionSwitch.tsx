@@ -154,7 +154,7 @@ const DataRegionInfo = () => (
           <p>
             For more information, visit{" "}
             <a
-              href="https://langfuse.com/docs/data-security-privacy"
+              href="#"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary-accent underline"

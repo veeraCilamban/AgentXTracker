@@ -395,7 +395,7 @@ export default function ObservationsTable({
       headerTooltip: {
         description:
           "You can differentiate the importance of observations with the level attribute to control the verbosity of your traces and highlight errors and warnings.",
-        href: "https://langfuse.com/docs/tracing-features/log-levels",
+        href: "#",
       },
       enableHiding: true,
       cell({ row }) {
@@ -422,7 +422,7 @@ export default function ObservationsTable({
       headerTooltip: {
         description:
           "Use a statusMessage to e.g. provide additional information on a status such as level=ERROR.",
-        href: "https://langfuse.com/docs/tracing-features/log-levels",
+        href: "#",
       },
       enableHiding: true,
       defaultHidden: true,
@@ -557,7 +557,7 @@ export default function ObservationsTable({
       header: "Prompt",
       headerTooltip: {
         description: "Link to prompt version in Langfuse prompt management.",
-        href: "https://langfuse.com/docs/prompts",
+        href: "#",
       },
       size: 200,
       enableHiding: true,
@@ -616,7 +616,7 @@ export default function ObservationsTable({
       size: 300,
       headerTooltip: {
         description: "Add metadata to traces to track additional information.",
-        href: "https://langfuse.com/docs/tracing-features/metadata",
+        href: "#",
       },
       cell: ({ row }) => {
         const observationId: string = row.getValue("id");
@@ -704,7 +704,7 @@ export default function ObservationsTable({
       size: 100,
       headerTooltip: {
         description: "Track changes via the version tag.",
-        href: "https://langfuse.com/docs/experimentation",
+        href: "#",
       },
       enableHiding: true,
       enableSorting: true,
