@@ -40,7 +40,7 @@ export function ThemeToggle() {
           }}
         />
       </div>
-      <div title="System mode">
+      {/* <div title="System mode">
         <Monitor
           className={cn(
             theme === "system" ? "text-primary-accent" : "",
@@ -54,7 +54,7 @@ export function ThemeToggle() {
             });
           }}
         />
-      </div>
+      </div> */}
     </div>
   );
 }
