@@ -532,7 +532,7 @@
       "createdBy": null,
       "updatedBy": null,
       "projectId": null,
-      "name": "Langfuse Cost Dashboard",
+      "name": "Autox Cost Dashboard",
       "description": "Review your LLM costs.",
       "owner": "LANGFUSE",
       "definition": {

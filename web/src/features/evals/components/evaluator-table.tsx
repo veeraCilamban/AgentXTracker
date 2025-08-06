@@ -200,7 +200,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
           <div className="flex items-center gap-2">
             <TableIdOrName value={template.name} />
             <div className="flex justify-center">
-              <MaintainerTooltip maintainer={row.original.maintainer} />
+              <MaintainerTooltip maintainer={"Autox Maintained"} />
             </div>
           </div>
         );
@@ -342,13 +342,7 @@ export default function EvaluatorTable({ projectId }: { projectId: string }) {
       target: jobConfig.targetObject,
       filter: z.array(singleFilter).parse(jobConfig.filter),
       result: result,
-      maintainer: jobConfig.evalTemplate
-        ? jobConfig.evalTemplate.projectId
-          ? "User maintained"
-          : jobConfig.evalTemplate.name.startsWith(RAGAS_TEMPLATE_PREFIX)
-            ? "Langfuse and Ragas maintained"
-            : "Langfuse maintained"
-        : "Not available",
+      maintainer: "Autox Maintained"
     };
   };
 

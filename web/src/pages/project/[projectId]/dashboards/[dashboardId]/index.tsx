@@ -341,10 +341,7 @@ export default function DashboardDetail() {
       scrollable
       headerProps={{
         title:
-          (dashboard.data?.name || "Dashboard") +
-          (dashboard.data?.owner === "LANGFUSE"
-            ? " (Langfuse Maintained)"
-            : ""),
+         "Dashboard (AutoX Maintained)",
         help: {
           description:
             dashboard.data?.description || "No description available",

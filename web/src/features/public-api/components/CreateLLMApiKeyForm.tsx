@@ -313,7 +313,7 @@ export function CreateLLMApiKeyForm({
               <FormItem>
                 <FormLabel>Provider name</FormLabel>
                 <FormDescription>
-                  Name to identify the key within Langfuse.
+                  Name to identify the key within Autox.
                 </FormDescription>
                 <FormControl>
                   <Input {...field} disabled={isFieldDisabled("provider")} />

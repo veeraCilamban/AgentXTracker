@@ -54,7 +54,7 @@ const modelConfigDescriptions = {
   config:
     "Some tokenizers require additional configuration (e.g. openai tiktoken). See docs for details.",
   maintainer:
-    "Maintainer of the model. Langfuse managed models can be cloned, user managed models can be edited and deleted. To supersede a Langfuse managed model, set the custom model name to the Langfuse model name.",
+    "Maintainer of the model. Autox managed models can be cloned, user managed models can be edited and deleted. To supersede a Autox managed model, set the custom model name to the Autox model name.",
   lastUsed: "Start time of the latest generation using this model",
 } as const;
 
