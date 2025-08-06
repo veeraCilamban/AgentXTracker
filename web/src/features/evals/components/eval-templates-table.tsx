@@ -174,7 +174,7 @@ export default function EvalsTemplateTable({
       cell: (row) => {
         return (
           <div className="flex justify-center">
-            <MaintainerTooltip maintainer={row.getValue()} />
+            <MaintainerTooltip maintainer={"Autox Maintained"} />
           </div>
         );
       },
